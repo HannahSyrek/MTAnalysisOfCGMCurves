@@ -42,7 +42,7 @@ class Curve(object):
             thirdpart = np.random.randint(low=curve[-1]-1, high=curve[-1]+1, size=(1,self.Time/4))
             curve = np.append(curve, thirdpart)
         return curve
-     
+      
      
     def getCategorie(self):
         return self.Categorie
