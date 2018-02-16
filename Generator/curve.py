@@ -28,9 +28,9 @@ class Curve(object):
         firstpart = np.random.randint(low=self.Normalvalue, high=self.Maximum, size=(1,self.Time/4))
         sortedfirstpart = np.sort(firstpart)
         curve = np.append(curve, sortedfirstpart)
-        curve = np.append(curve, np.random.randint(low=self.Maximum-10, high=self.Maximum+10))
-        curve = np.append(curve, np.random.randint(low=self.Maximum-10, high=self.Maximum+10))
-        curve = np.append(curve, np.random.randint(low=self.Maximum-10, high=self.Maximum+10))        
+        curve = np.append(curve, np.random.randint(low=self.Maximum-1, high=self.Maximum+1))
+        curve = np.append(curve, np.random.randint(low=self.Maximum-1, high=self.Maximum+1))
+        curve = np.append(curve, np.random.randint(low=self.Maximum-1, high=self.Maximum+1))        
         secondpart = np.random.randint(low=self.Minimum, high=self.Maximum, size=(1,self.Time/4))
         sortedsecondpart = -np.sort(-secondpart)
         curve = np.append(curve, sortedsecondpart)
@@ -39,7 +39,7 @@ class Curve(object):
             sortedthirdpart = np.sort(thirdpart)
             curve = np.append(curve, sortedthirdpart)
         else:    
-            thirdpart = np.random.randint(low=curve[-1]-1, high=curve[-1], size=(1,self.Time/4))
+            thirdpart = np.random.randint(low=curve[-1]-1, high=curve[-1]+1, size=(1,self.Time/4))
             curve = np.append(curve, thirdpart)
         return curve
      
