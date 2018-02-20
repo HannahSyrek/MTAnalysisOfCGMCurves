@@ -4,7 +4,8 @@ Created on Sat Feb 17 09:15:20 2018
 
 @author: hannah syrek
 This script implements the DTW algorithm to measure the distances between time
-series, a simple classification algorithmes them with k-means.
+series, a simple knn-classification algorithm and k-means to find patterns in
+the datasets.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,15 +14,13 @@ import random
 
 
 #==============================================================================
-#read from train- and testset
+#read data from .csv files
 #==============================================================================
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None) 
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
                         delimiter = ",", dtype = None) 
 entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
-#print entiredataset
-
 realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3)) 
@@ -85,11 +84,11 @@ def knn(train,test,w):
         preds.append(closest_seq[-1])
     return classification_report(test[:,-1],preds)
 
- 
+
 '''
-Implements the k-means clustering algorithm. Assign data points to cluster(Expectation), 
+Implements the k-means clustering algorithm. Assign data points to cluster (Expectation), 
 recalculate centroids of cluster (Maximization).
-Takes round about 10 minutes to run.
+Takes round about 15 minutes to run on the entire dataset for 10 iterations.
 '''
 def k_means_clust(data,num_clust,num_iter,w=5):
     centroids=random.sample(data,num_clust)
@@ -122,8 +121,8 @@ def k_means_clust(data,num_clust,num_iter,w=5):
 
 
 '''
-Skip the missing cgm values in the real data, put the two sets together 
-to have a bigger dataset.
+Skip the missing cgm values in the real data. Missing values were previously 
+replaced by -1.
 '''
 def skipmissingdata(data): 
     newdata = []
@@ -134,29 +133,33 @@ def skipmissingdata(data):
             newdata.append(i)            
     return newdata
 
-D1 = skipmissingdata(realdata1)
-D1new = np.array(D1) 
-D1new.resize(487,20)
-D2 = skipmissingdata(realdata1)
-D2new = np.array(D2) 
-D2new.resize(487,20)
-realdataset = np.vstack((D1new[:,:],D2new[:,:]))
-
    
 #==============================================================================
 #call some methodes and plot the results to visualize the found patterns
 #==============================================================================
+D1 = skipmissingdata(realdata1)
+D1new = np.array(D1) 
+#20 columns are 20 values per curve that correspond to a duration of about 5 hours
+D1new.resize(51,192)
+D2 = skipmissingdata(realdata1)
+D2new = np.array(D2) 
+D2new.resize(51,192)
+#stack the two sets together to have more data 
+realdataset = np.vstack((D1new[:,:],D2new[:,:]))
+   
+#fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
+#the visualization
 l1 = []
 u1 = []
-for i in range(0, 20):
+for i in range(0, 12):
     l1 = np.append(l1, 70)
     u1 = np.append(u1, 180)
-t_lu = np.asarray(range(0,20))
- 
-centroids = k_means_clust(realdataset,4,10,100)
-for i in centroids:   
-    plt.plot(i)
+t_lu = np.asarray(range(0,12))
 
+#plot the final centroids of the particular cluster 
+#centroids = k_means_clust(realdataset,6,15,100)
+#for i in centroids:   
+    #plt.plot(i)
 plt.plot(t_lu, u1,'r--' , t_lu, l1, 'r--')
 plt.ylabel('glucose content (mg/dL)')
 plt.xlabel('timesteps')
