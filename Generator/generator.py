@@ -32,7 +32,8 @@ class Generator:
     '''
     Method to build the datamatrix.
     There are 50 curve samples per categorie, every curve exists out of 60 values.
-    '''    
+    '''  
+
     def builddataset():
         dataset = np.zeros((300,242))
         counter = 0
@@ -64,40 +65,52 @@ class Generator:
 
     #call needed methods to produce the dataset
     d = builddataset()
-    saveData(d)
+    #saveData(d)
 
 #==============================================================================
-# plot one sample out of each categorie to visualize their specific progression
+# plot the mean of the 50 samples per categorie to visualize their specific progression
 #==============================================================================
+    c = np.zeros((6,190))
+    for i in range(0,190):
+        count = 0
+        while(count<6):
+            for j in range(0,49):
+                c[count][i] = (d[j+(50*count)][i]+d[(j+(50*count))+1][i])/2   
+            count +=1
+
  
-    t1 = np.asarray(range(0,len(C1.generate())))
-    c1 = C1.generate()
-    c1hat2 = savgol_filter(c1, 51 ,3)
-    t2 = np.asarray(range(0,len(C2.generate())))
-    c2 = C2.generate()
+    t = np.asarray(range(0,190))
+    c1 = c[0][:]
+    c1hat = savgol_filter(c1, 51, 3)
+    c2 = c[1][:]
     c2hat = savgol_filter(c2, 51, 3)
-    t3 = np.asarray(range(0,len(C3.generate())))
-    c3 = C3.generate()
+    c3 = c[2][:]
     c3hat = savgol_filter(c3, 51, 3)
-    t4 = np.asarray(range(0,len(C4.generate())))
-    c4 = C4.generate()
+    c4 = c[3][:]
     c4hat = savgol_filter(c4, 51, 3)
-    t5 = np.asarray(range(0,len(C5.generate())))
-    c5 = C5.generate()
+    c5 = c[4][:]
     c5hat = savgol_filter(c5, 51, 3)
-    t6 = np.asarray(range(0,len(C6.generate()))) 
-    c6 = C6.generate()
-    c6hat = savgol_filter(c6, 51, 3)
-    maxcurve = max(len(c1),len(c2),len(c3),len(c4),len(c5),len(c6))
+    c6 = c[5][:]
+    c6hat = savgol_filter(c6, 51, 3)                    
+    
     l1 = []
     u1 = []
-    for i in range(0, maxcurve):
+
+    for i in range(0, 190):
         l1 = np.append(l1, C1.Lowerthreshold)
         u1 = np.append(u1, C1.Upperthreshold)
-    t_lu = np.asarray(range(0,maxcurve))
+    t_lu = np.asarray(range(0,190))
     
-    plt.plot(t1,c1hat2, t2,c2hat, t3,c3hat, t4,c4hat, t5,c5hat, t6,c6hat, t_lu, u1,'r--' , t_lu, l1, 'r--')
-    plt.axis([0, maxcurve, 10, 400])
+    curve1, = plt.plot(t,c1hat,label="1")
+    curve2, = plt.plot(t,c2hat,label="2")
+    curve3, = plt.plot(t,c3hat,label="3")
+    curve4, = plt.plot(t,c4hat,label="4")
+    curve5, = plt.plot(t,c5hat,label="5")
+    curve6, = plt.plot(t,c6hat,label="6")
+    upper, = plt.plot(t_lu, u1,'r--')
+    lower, = plt.plot(t_lu, l1,'r--')   
+    plt.legend(handles=[curve1,curve2,curve3,curve4,curve5,curve6], loc=1)
+    plt.axis([0, 190, 10, 400])
     plt.ylabel('glucose content (mg/dL)')
     plt.xlabel('timesteps')
     plt.show()
