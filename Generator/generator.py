@@ -10,6 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 from curve import Curve
+import sys  
 
 '''
 This class generates a train- and a testset to classify cgm curve progressions.
@@ -20,14 +21,14 @@ class Generator:
     
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
-    C1 = Curve(1,170,85,100,250,180,70)  
-    C2 = Curve(2,185,50,100,250,180,70)
-    C3 = Curve(3,280,105,100,250,180,70)    
+    C1 = Curve(1,160,85,100,250,180,70)  
+    C2 = Curve(2,185,40,100,250,180,70)
+    #C3 = Curve(3,280,105,100,250,180,70)    
     C4 = Curve(4,220,200,100,250,180,70)      
-    C5 = Curve(5,200,40,100,250,180,70)      
+    #C5 = Curve(5,200,40,100,250,180,70)      
     C6 = Curve(6,230,115,210,250,180,70)
     global categories
-    categories = [C1,C2,C3,C4,C5,C6]
+    categories = [C1,C2,C4,C6]
 
     '''
     Method to build the datamatrix.
@@ -35,17 +36,17 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((300,242))
+        dataset = np.zeros((200,192))
         counter = 0
         for curve in categories:            
-            if(counter < 300):
+            if(counter < 200):
                 for i in range(counter, counter +50):
-                    for j in range(0,242):
+                    for j in range(0,192):
                         #generate the specific curve
                         c = curve.generate()
                         #smooth curve with savitzky_golay filter
                         chat = savgol_filter(c, 51, 3)
-                        while(len(chat) < 241):
+                        while(len(chat) < 191):
                             chat = np.append(chat, 0)
                         chat = np.append(chat, curve.Categorie)
                         dataset[i][j] = chat[j]
@@ -59,21 +60,23 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("testset.csv")
+        df.to_csv("trainset.csv",  index=False)
         #df.to_csv("testset.csv")
         
 
     #call needed methods to produce the dataset
     d = builddataset()
-    #saveData(d)
+    saveData(d)
 
-#==============================================================================
-# plot the mean of the 50 samples per categorie to visualize their specific progression
-#==============================================================================
-    c = np.zeros((6,190))
+#=======================================================================================
+# plot the means of the 50 samples per categorie to visualize their specific progression
+#=======================================================================================
+    reload(sys)  
+    sys.setdefaultencoding('utf8')
+    c = np.zeros((4,190))
     for i in range(0,190):
         count = 0
-        while(count<6):
+        while(count<4):
             for j in range(0,49):
                 c[count][i] = (d[j+(50*count)][i]+d[(j+(50*count))+1][i])/2   
             count +=1
@@ -84,13 +87,13 @@ class Generator:
     c1hat = savgol_filter(c1, 51, 3)
     c2 = c[1][:]
     c2hat = savgol_filter(c2, 51, 3)
-    c3 = c[2][:]
-    c3hat = savgol_filter(c3, 51, 3)
-    c4 = c[3][:]
+    #c3 = c[2][:]
+    #c3hat = savgol_filter(c3, 51, 3)
+    c4 = c[2][:]
     c4hat = savgol_filter(c4, 51, 3)
-    c5 = c[4][:]
-    c5hat = savgol_filter(c5, 51, 3)
-    c6 = c[5][:]
+    #c5 = c[4][:]
+    #c5hat = savgol_filter(c5, 51, 3)
+    c6 = c[3][:]
     c6hat = savgol_filter(c6, 51, 3)                    
     
     l1 = []
@@ -101,15 +104,15 @@ class Generator:
         u1 = np.append(u1, C1.Upperthreshold)
     t_lu = np.asarray(range(0,190))
     
-    curve1, = plt.plot(t,c1hat,label="1")
-    curve2, = plt.plot(t,c2hat,label="2")
-    curve3, = plt.plot(t,c3hat,label="3")
-    curve4, = plt.plot(t,c4hat,label="4")
-    curve5, = plt.plot(t,c5hat,label="5")
-    curve6, = plt.plot(t,c6hat,label="6")
+    curve1, = plt.plot(t,c1hat,label='Normal')
+    curve2, = plt.plot(t,c2hat,label='Bolus zu groß')
+    #curve3, = plt.plot(t,c3hat,label="3") 
+    curve4, = plt.plot(t,c4hat,label='Bolus zu klein')
+    #curve5, = plt.plot(t,c5hat,label="5")
+    curve6, = plt.plot(t,c6hat,label='Korrekturbolus')
     upper, = plt.plot(t_lu, u1,'r--')
     lower, = plt.plot(t_lu, l1,'r--')   
-    plt.legend(handles=[curve1,curve2,curve3,curve4,curve5,curve6], loc=1)
+    plt.legend(loc=1, fontsize = 'x-large' )
     plt.axis([0, 190, 10, 400])
     plt.ylabel('glucose content (mg/dL)')
     plt.xlabel('timesteps')

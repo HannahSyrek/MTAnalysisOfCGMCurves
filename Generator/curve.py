@@ -11,7 +11,6 @@ import numpy as np
 
 class Curve(object):
     
-    
     def __init__(self, categorie, maximum, minimum, normalvalue, time, upperthreshold, lowerthreshold): 
         self.Categorie = categorie        
         self.Maximum = maximum 
@@ -23,8 +22,8 @@ class Curve(object):
     
     
     def generate(self):
-        curve = np.array([np.random.randint(low=self.Normalvalue-10, high=self.Normalvalue+10), 
-                          np.random.randint(low=self.Normalvalue-10, high=self.Normalvalue+10)])
+        curve = np.array([np.random.randint(low=self.Normalvalue-20, high=self.Normalvalue+20), 
+                          np.random.randint(low=self.Normalvalue-20, high=self.Normalvalue+20)])
         firstpart = np.random.randint(low=self.Normalvalue, high=self.Maximum, size=(1,self.Time/4))
         sortedfirstpart = np.sort(firstpart)
         curve = np.append(curve, sortedfirstpart)
@@ -46,6 +45,8 @@ class Curve(object):
      
     def getCategorie(self):
         return self.Categorie
+        
+        
         
   
 

@@ -17,10 +17,9 @@ import random
 #read data from .csv files
 #==============================================================================
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
-                         delimiter = ",", dtype = None) 
+                         delimiter = ",", dtype = None, skip_header = 1) 
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
-                        delimiter = ",", dtype = None) 
-entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
+                        delimiter = ",", dtype = None, skip_header = 1) 
 realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3)) 
@@ -139,13 +138,14 @@ def skipmissingdata(data):
 #==============================================================================
 D1 = skipmissingdata(realdata1)
 D1new = np.array(D1) 
-#20 columns are 20 values per curve that correspond to a duration of about 5 hours
 D1new.resize(51,192)
 D2 = skipmissingdata(realdata1)
 D2new = np.array(D2) 
 D2new.resize(51,192)
-#stack the two sets together to have more data 
+#stack the two realsets together to have a bigger dataset
 realdataset = np.vstack((D1new[:,:],D2new[:,:]))
+#stack the train- and testset together to have a bigger dataset
+entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
    
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
 #the visualization
@@ -156,6 +156,8 @@ for i in range(0, 12):
     u1 = np.append(u1, 180)
 t_lu = np.asarray(range(0,12))
 
+
+print knn(trainset,testset, 100)
 #plot the final centroids of the particular cluster 
 #centroids = k_means_clust(realdataset,6,15,100)
 #for i in centroids:   
