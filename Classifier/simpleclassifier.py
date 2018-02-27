@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Feb 17 09:15:20 2018
-
 @author: hannah syrek
 This script implements the DTW algorithm to measure the distances between time
 series, a simple knn-classification algorithm and k-means to find patterns in
@@ -9,6 +8,7 @@ the datasets.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn.metrics import classification_report
 import random
 
@@ -49,7 +49,7 @@ def DTWDistanceFast(s1, s2,w):
     
 '''
 Implements LB_Keogh lower bound of dynamic timewraping to speed up the computations.
-Good size for r seems to be r=10
+Good size for r seems to be r=10.
 '''
 def LB_Keogh(s1,s2,r):
     LB_sum=0  
@@ -64,30 +64,51 @@ def LB_Keogh(s1,s2,r):
 
 
 '''
-Implements the K-NearestNeighbor classification to determine the similarity 
-between two time series more precisely two Cgm curves.
-Takes round about 30 minutes to run.
+Implements the k-NearestNeighbor classification to determine the similarity 
+between the time series and classify the dataset with real cgm values.
+(Takes round about 5 minutes to run.)
 '''
 def knn(train,test,w):
-    preds=[]
+    predictions=[]
+    #categorize die time series
     for ind,i in enumerate(test):
         min_dist=float('inf')
         closest_seq=[]
-        #print ind
+        print ind
         for j in train:
             if LB_Keogh(i[:-1],j[:-1],10)<min_dist:
                 dist=DTWDistanceFast(i[:-1],j[:-1],w)
                 if dist<min_dist:
                     min_dist=dist
                     closest_seq=j
-        preds.append(closest_seq[-1])
-    return classification_report(test[:,-1],preds)
+        predictions.append(closest_seq[-1])
+    #produce the categorized dataset catdata
+    predsT = np.array([predictions]).T
+    realdata = np.array(test)
+    catdata = np.concatenate((realdata, predsT), axis = 1)       
+    categorie = 1
+    meandata = np.zeros((4,20))
+    #add and divide the time series of the particular categories to produce 
+    #the averaged curve of the specific curve
+    while(categorie<7):
+        count = 0
+        for j in range(0,4):
+            for i in range(0,len(predictions)):      
+                if(catdata[i][-1]==categorie):
+                    meandata[j][:] += catdata[i][:-1]
+                    count += 1           
+            meandata[j][:] /= count
+            categorie += 1
+            if (categorie==3 or categorie==5):
+                categorie += 1
+              
+    return meandata
 
 
 '''
 Implements the k-means clustering algorithm. Assign data points to cluster (Expectation), 
 recalculate centroids of cluster (Maximization).
-Takes round about 15 minutes to run on the entire dataset for 10 iterations.
+(Takes round about 15 minutes to run on the entire dataset for 10 iterations.)
 '''
 def k_means_clust(data,num_clust,num_iter,w=5):
     centroids=random.sample(data,num_clust)
@@ -96,7 +117,7 @@ def k_means_clust(data,num_clust,num_iter,w=5):
         counter+=1
         print counter
         assignments={}
-        #Expectation: Assign data points to clusters
+        #Expectation: Assign data points to cluster
         for ind,i in enumerate(data):
             min_dist=float('inf')
             closest_clust=None
@@ -134,39 +155,44 @@ def skipmissingdata(data):
 
    
 #==============================================================================
-#call some methodes and plot the results to visualize the found patterns
+#plot the results to visualize the found patterns
 #==============================================================================
 D1 = skipmissingdata(realdata1)
 D1new = np.array(D1) 
-D1new.resize(51,192)
+D1new.resize(487,20)
 D2 = skipmissingdata(realdata1)
 D2new = np.array(D2) 
-D2new.resize(51,192)
+D2new.resize(487,20)
 #stack the two realsets together to have a bigger dataset
 realdataset = np.vstack((D1new[:,:],D2new[:,:]))
+#print realdataset
+df = pd.DataFrame(realdataset)
+df.to_csv("realdataset.csv",  index=False)
 #stack the train- and testset together to have a bigger dataset
-entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
-   
+#entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
+
+curves =  knn(trainset,realdataset, 50)
+for i in curves:
+    plt.plot(i)
+  
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
 #the visualization
 l1 = []
 u1 = []
-for i in range(0, 12):
+for i in range(0, 20):
     l1 = np.append(l1, 70)
     u1 = np.append(u1, 180)
-t_lu = np.asarray(range(0,12))
-
-
-print knn(trainset,testset, 100)
-#plot the final centroids of the particular cluster 
-#centroids = k_means_clust(realdataset,6,15,100)
-#for i in centroids:   
-    #plt.plot(i)
+t_lu = np.asarray(range(0,20))
 plt.plot(t_lu, u1,'r--' , t_lu, l1, 'r--')
 plt.ylabel('glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()
 
+
+#plot the final centroids of the particular cluster 
+#centroids = k_means_clust(realdataset,6,15,100)
+#for i in centroids:   
+    #plt.plot(i)
         
 
 

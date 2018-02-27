@@ -21,12 +21,12 @@ class Generator:
     
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
-    C1 = Curve(1,160,85,100,250,180,70)  
-    C2 = Curve(2,185,40,100,250,180,70)
+    C1 = Curve(1,160,85,100,23,180,70)  
+    C2 = Curve(2,185,40,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
-    C4 = Curve(4,220,200,100,250,180,70)      
+    C4 = Curve(4,220,200,100,23,180,70)      
     #C5 = Curve(5,200,40,100,250,180,70)      
-    C6 = Curve(6,230,115,210,250,180,70)
+    C6 = Curve(6,230,115,210,23,180,70)
     global categories
     categories = [C1,C2,C4,C6]
 
@@ -36,17 +36,17 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((200,192))
+        dataset = np.zeros((200,21))
         counter = 0
         for curve in categories:            
             if(counter < 200):
                 for i in range(counter, counter +50):
-                    for j in range(0,192):
+                    for j in range(0,21):
                         #generate the specific curve
                         c = curve.generate()
                         #smooth curve with savitzky_golay filter
-                        chat = savgol_filter(c, 51, 3)
-                        while(len(chat) < 191):
+                        chat = savgol_filter(c, 5, 3)
+                        while(len(chat) < 20):
                             chat = np.append(chat, 0)
                         chat = np.append(chat, curve.Categorie)
                         dataset[i][j] = chat[j]
@@ -73,8 +73,8 @@ class Generator:
 #=======================================================================================
     reload(sys)  
     sys.setdefaultencoding('utf8')
-    c = np.zeros((4,190))
-    for i in range(0,190):
+    c = np.zeros((4,20))
+    for i in range(0,20):
         count = 0
         while(count<4):
             for j in range(0,49):
@@ -82,27 +82,27 @@ class Generator:
             count +=1
 
  
-    t = np.asarray(range(0,190))
+    t = np.asarray(range(0,20))
     c1 = c[0][:]
-    c1hat = savgol_filter(c1, 51, 3)
+    c1hat = savgol_filter(c1, 5, 3)
     c2 = c[1][:]
-    c2hat = savgol_filter(c2, 51, 3)
+    c2hat = savgol_filter(c2, 5, 3)
     #c3 = c[2][:]
     #c3hat = savgol_filter(c3, 51, 3)
     c4 = c[2][:]
-    c4hat = savgol_filter(c4, 51, 3)
+    c4hat = savgol_filter(c4, 5, 3)
     #c5 = c[4][:]
     #c5hat = savgol_filter(c5, 51, 3)
     c6 = c[3][:]
-    c6hat = savgol_filter(c6, 51, 3)                    
+    c6hat = savgol_filter(c6, 5, 3)                    
     
     l1 = []
     u1 = []
 
-    for i in range(0, 190):
+    for i in range(0, 20):
         l1 = np.append(l1, C1.Lowerthreshold)
         u1 = np.append(u1, C1.Upperthreshold)
-    t_lu = np.asarray(range(0,190))
+    t_lu = np.asarray(range(0,20))
     
     curve1, = plt.plot(t,c1hat,label='Normal')
     curve2, = plt.plot(t,c2hat,label='Bolus zu groß')
@@ -113,7 +113,7 @@ class Generator:
     upper, = plt.plot(t_lu, u1,'r--')
     lower, = plt.plot(t_lu, l1,'r--')   
     plt.legend(loc=1, fontsize = 'x-large' )
-    plt.axis([0, 190, 10, 400])
+    plt.axis([0, 20, 10, 400])
     plt.ylabel('glucose content (mg/dL)')
     plt.xlabel('timesteps')
     plt.show()
