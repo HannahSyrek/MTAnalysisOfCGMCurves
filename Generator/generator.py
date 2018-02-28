@@ -22,7 +22,7 @@ class Generator:
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
     C1 = Curve(1,160,85,100,23,180,70)  
-    C2 = Curve(2,185,40,100,23,180,70)
+    C2 = Curve(2,180,40,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
     C4 = Curve(4,220,200,100,23,180,70)      
     #C5 = Curve(5,200,40,100,250,180,70)      
@@ -74,12 +74,14 @@ class Generator:
     reload(sys)  
     sys.setdefaultencoding('utf8')
     c = np.zeros((4,20))
-    for i in range(0,20):
-        count = 0
-        while(count<4):
-            for j in range(0,49):
-                c[count][i] = (d[j+(50*count)][i]+d[(j+(50*count))+1][i])/2   
-            count +=1
+    count = 0
+    while(count<4):
+        for j in range(0,49):
+            c[count][:] += d[j+(50*count)][:-1]
+        print c
+        c[count][:] /= 50
+        print c
+        count +=1
 
  
     t = np.asarray(range(0,20))

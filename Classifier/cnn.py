@@ -17,7 +17,8 @@ from keras.models import Sequential
 from keras.utils.vis_utils import plot_model
 
 
-
+timeserie = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/realdataset.csv", delimiter = ",", dtype = None, skip_header = 1) 
+ts = np.concatenate((timeserie[0:486]))
 
 __date__ = '2016-07-22'
 
@@ -112,11 +113,12 @@ def main():
     """Prepare input data, build model, evaluate."""
     
     np.set_printoptions(threshold=25)
-    ts_length = 1000
+    #ts_length = 1000
     window_size = 50
 
     print('\nSimple single timeseries vector prediction')
-    timeseries = np.arange(ts_length) 
+    timeseries = ts #np.arange(ts_length)
+    print (timeseries)
     evaluate_timeseries(timeseries, window_size)                  # The timeseries f(t) = t
     #print('\nMultiple-input, multiple-output prediction')
     #timeseries = np.array([np.arange(ts_length), -np.arange(ts_length)]).T      # The timeseries f(t) = [t, -t]

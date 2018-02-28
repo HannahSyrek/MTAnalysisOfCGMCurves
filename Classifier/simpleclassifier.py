@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import classification_report
 import random
+import sys
 
 
 #==============================================================================
@@ -68,76 +69,91 @@ Implements the k-NearestNeighbor classification to determine the similarity
 between the time series and classify the dataset with real cgm values.
 (Takes round about 5 minutes to run.)
 '''
-def knn(train,test,w):
+def knnStatic(train,test,w):
     predictions=[]
     #categorize die time series
     for ind,i in enumerate(test):
         min_dist=float('inf')
         closest_seq=[]
-        print ind
+        print ind 
         for j in train:
-            if LB_Keogh(i[:-1],j[:-1],10)<min_dist:
-                dist=DTWDistanceFast(i[:-1],j[:-1],w)
+            if LB_Keogh(i[:],j[:-1],10)<min_dist:
+                dist=DTWDistanceFast(i[:],j[:-1],w)
                 if dist<min_dist:
-                    min_dist=dist
+                    min_dist=dist     
                     closest_seq=j
         predictions.append(closest_seq[-1])
-    #produce the categorized dataset catdata
+    #produce the categorized dataset: catdata
     predsT = np.array([predictions]).T
     realdata = np.array(test)
-    catdata = np.concatenate((realdata, predsT), axis = 1)       
-    categorie = 1
+    catdata = np.concatenate((realdata, predsT), axis = 1)  
+    df = pd.DataFrame(catdata)
+    df.to_csv("catdataset.csv",  index=False)     
+    category = 1
     meandata = np.zeros((4,20))
-    #add and divide the time series of the particular categories to produce 
-    #the averaged curve of the specific curve
-    while(categorie<7):
-        count = 0
+    #average the curves of the particular category
+    while(category<7):
         for j in range(0,4):
+            count = 0
+            for i in range(0,len(predictions)):      
+                if(catdata[i][-1]==category):
+                    meandata[j][:] += catdata[i][:-1]
+                    count += 1           
+            meandata[j][:] /= count
+            category += 1
+            if (category==3 or category==5):
+                category += 1
+    #return the averaged curves, one per categorie         
+    return meandata
+
+
+'''
+Implements the k-NearestNeighbor classification to determine the similarity 
+between time series, iterate point by point over the hole dataset to find the 
+progression of the categories.
+(Takes round about 5 minutes to run.)
+'''
+def knnDynamic(train,test,w):
+    predictions=[]
+    #categorize die time series
+    for ind,i in enumerate(test):
+        min_dist=float('inf')
+        closest_seq=[]
+        print ind 
+        for j in train:
+            if LB_Keogh(i[:],j[:-1],10)<min_dist:
+                dist=DTWDistanceFast(i[:],j[:-1],w)
+                if dist<min_dist:
+                    min_dist=dist     
+                    closest_seq=j
+                    #print min_dist, closest_seq[-1]
+        if(min_dist>200):
+            predictions.append(5.0)
+        else:
+            predictions.append(closest_seq[-1])
+    #produce the categorized dataset: catdata
+    predsT = np.array([predictions]).T
+    realdata = np.array(test)
+    catdata = np.concatenate((realdata, predsT), axis = 1)  
+    df = pd.DataFrame(catdata)
+    df.to_csv("catdataset.csv",  index=False)     
+    categorie = 1
+    meandata = np.zeros((5,20))
+    #average the curves of the particular category
+    while(categorie<7):
+        for j in range(0,5):
+            count = 0
             for i in range(0,len(predictions)):      
                 if(catdata[i][-1]==categorie):
                     meandata[j][:] += catdata[i][:-1]
                     count += 1           
             meandata[j][:] /= count
             categorie += 1
-            if (categorie==3 or categorie==5):
+            if (categorie==3):
                 categorie += 1
-              
+    #return the averaged curves, one per categorie         
     return meandata
 
-
-'''
-Implements the k-means clustering algorithm. Assign data points to cluster (Expectation), 
-recalculate centroids of cluster (Maximization).
-(Takes round about 15 minutes to run on the entire dataset for 10 iterations.)
-'''
-def k_means_clust(data,num_clust,num_iter,w=5):
-    centroids=random.sample(data,num_clust)
-    counter=0
-    for n in range(num_iter):
-        counter+=1
-        print counter
-        assignments={}
-        #Expectation: Assign data points to cluster
-        for ind,i in enumerate(data):
-            min_dist=float('inf')
-            closest_clust=None
-            for c_ind,j in enumerate(centroids):
-                if LB_Keogh(i,j,10)<min_dist:
-                    cur_dist=DTWDistanceFast(i,j,w)
-                    if cur_dist<min_dist:
-                        min_dist=cur_dist
-                        closest_clust=c_ind
-            if closest_clust in assignments:
-                assignments[closest_clust].append(ind)
-            else:
-                assignments[closest_clust]=[]
-        #Maximization: Recalculate centroids of clusters
-        for key in assignments:
-            clust_sum=0
-            for k in assignments[key]:
-                clust_sum=clust_sum+data[k]
-            centroids[key]=[m/len(assignments[key]) for m in clust_sum]
-    return centroids
 
 
 '''
@@ -152,28 +168,35 @@ def skipmissingdata(data):
         else:
             newdata.append(i)            
     return newdata
-
    
 #==============================================================================
 #plot the results to visualize the found patterns
 #==============================================================================
+reload(sys)  
+sys.setdefaultencoding('utf8')
 D1 = skipmissingdata(realdata1)
 D1new = np.array(D1) 
-D1new.resize(487,20)
+D1new.resize(486,20)
 D2 = skipmissingdata(realdata1)
 D2new = np.array(D2) 
-D2new.resize(487,20)
+D2new.resize(486,20)
 #stack the two realsets together to have a bigger dataset
-realdataset = np.vstack((D1new[:,:],D2new[:,:]))
+realdataset = D1new
+#realdataset = np.vstack((D1new[:,:],D2new[:,:]))
 #print realdataset
 df = pd.DataFrame(realdataset)
 df.to_csv("realdataset.csv",  index=False)
 #stack the train- and testset together to have a bigger dataset
 #entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
 
-curves =  knn(trainset,realdataset, 50)
-for i in curves:
-    plt.plot(i)
+#plot the categorized curves of the realdataset
+curves =  knnStatic(trainset,realdataset, 50)
+plt.plot(curves[0], label= '1: Normal')
+plt.plot(curves[1], label= '2: Bolus zu groß')
+plt.plot(curves[2], label= '4: Bolus zu klein')
+#plt.plot(curves[3], label= '5: Keine passende Kategorie')
+plt.plot(curves[3], label= '6: Korrekturbolus')
+
   
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
 #the visualization
@@ -184,6 +207,8 @@ for i in range(0, 20):
     u1 = np.append(u1, 180)
 t_lu = np.asarray(range(0,20))
 plt.plot(t_lu, u1,'r--' , t_lu, l1, 'r--')
+plt.legend(loc=1)
+plt.axis([0, 19, 10, 350])
 plt.ylabel('glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()
