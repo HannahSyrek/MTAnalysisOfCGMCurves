@@ -19,6 +19,8 @@ import sys
 #==============================================================================
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
+#print trainset
+#print trainset.shape
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
 realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
@@ -26,8 +28,7 @@ realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3)) 
 realdata2 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
-                         usecols = (3))    
-
+                         usecols = (3))     
 
 '''
 Implements a faster version of dynamic time wraping, includes w, a windows size. 
@@ -111,48 +112,60 @@ def knnStatic(train,test,w):
 Implements the k-NearestNeighbor classification to determine the similarity 
 between time series, iterate point by point over the hole dataset to find the 
 progression of the categories.
-(Takes round about 5 minutes to run.)
+(Takes round about 30 minutes for 9716 time series to run.)
 '''
 def knnDynamic(train,test,w):
     predictions=[]
-    #categorize die time series
-    for ind,i in enumerate(test):
+    dyn_timeserie = np.zeros((9716,20))
+    #save all possible 9716 time series in a new matrix to iterate over all 
+    for i in range(0,len(test)-19):
+        dyn_timeserie[i][:] = test[i:20+i]
+    test = dyn_timeserie   
+    #categorize all time series 
+    #count = 0
+    for ind,i in enumerate(test):        
         min_dist=float('inf')
         closest_seq=[]
-        print ind 
+        print ind
+       
         for j in train:
             if LB_Keogh(i[:],j[:-1],10)<min_dist:
                 dist=DTWDistanceFast(i[:],j[:-1],w)
+                #print "dist", dist
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-                    #print min_dist, closest_seq[-1]
-        if(min_dist>200):
+                    #print min_dist
+        #assign all time series with a higher distance as 200 to a separate catgeory
+    
+        #print "mindist", min_dist
+        if(min_dist>50):
             predictions.append(5.0)
         else:
-            predictions.append(closest_seq[-1])
+            predictions.append(closest_seq[-1]) 
+                    
     #produce the categorized dataset: catdata
     predsT = np.array([predictions]).T
     realdata = np.array(test)
     catdata = np.concatenate((realdata, predsT), axis = 1)  
     df = pd.DataFrame(catdata)
-    df.to_csv("catdataset.csv",  index=False)     
-    categorie = 1
-    meandata = np.zeros((5,20))
-    #average the curves of the particular category
-    while(categorie<7):
-        for j in range(0,5):
-            count = 0
-            for i in range(0,len(predictions)):      
-                if(catdata[i][-1]==categorie):
-                    meandata[j][:] += catdata[i][:-1]
-                    count += 1           
-            meandata[j][:] /= count
-            categorie += 1
-            if (categorie==3):
-                categorie += 1
-    #return the averaged curves, one per categorie         
-    return meandata
+    df.to_csv("catdatasetStatic.csv",  index=False)     
+#    category = 1
+#    meandata = np.zeros((5,20))
+#    #average the curves of the particular category
+#    while(category<7):
+#        for j in range(0,5):
+#            count = 0
+#            for i in range(0,len(predictions)):      
+#                if(catdata[i][-1]==category):
+#                    meandata[j][:] += catdata[i][:-1]
+#                    count += 1           
+#            meandata[j][:] /= count
+#            category += 1
+#            if (category==3):
+#                category += 1
+    #return the averaged curves, one per categorie 
+    return catdata
 
 
 
@@ -174,28 +187,52 @@ def skipmissingdata(data):
 #==============================================================================
 reload(sys)  
 sys.setdefaultencoding('utf8')
-D1 = skipmissingdata(realdata1)
-D1new = np.array(D1) 
-D1new.resize(486,20)
-D2 = skipmissingdata(realdata1)
-D2new = np.array(D2) 
-D2new.resize(486,20)
-#stack the two realsets together to have a bigger dataset
-realdataset = D1new
-#realdataset = np.vstack((D1new[:,:],D2new[:,:]))
-#print realdataset
-df = pd.DataFrame(realdataset)
-df.to_csv("realdataset.csv",  index=False)
-#stack the train- and testset together to have a bigger dataset
-#entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
+Data = skipmissingdata(realdata1)
+realdata = np.array(Data)
+#uncomment the resize method for knnStatic 
+#realdata.resize(486,20) 
+#curves = knnStatic(trainset,realdata,50)
 
-#plot the categorized curves of the realdataset
-curves =  knnStatic(trainset,realdataset, 50)
-plt.plot(curves[0], label= '1: Normal')
-plt.plot(curves[1], label= '2: Bolus zu groß')
-plt.plot(curves[2], label= '4: Bolus zu klein')
+#curves =  knnDynamic(trainset,realdata, 50)
+#plt.plot(curves[0], label= '1: Normal')
+#plt.plot(curves[1], label= '2: Bolus zu groß')
+#plt.plot(curves[2], label= '4: Bolus zu klein')
 #plt.plot(curves[3], label= '5: Keine passende Kategorie')
-plt.plot(curves[3], label= '6: Korrekturbolus')
+#plt.plot(curves[4], label= '6: Korrekturbolus')
+
+tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/catdataset.csv",
+                          delimiter = ",", dtype = None, skip_header = 1)  
+print tempcatdata.shape
+#without the repeated ones
+catdata_dyn = np.zeros((1600,20))
+count = 0
+catdata_dyn[count] = tempcatdata[count][:-1]
+count = 1
+for i in range(0,1599):
+    if(catdata_dyn[i][-1] != tempcatdata[count][-1]):
+        catdata_dyn[i+1][:] = tempcatdata[count][:-1]
+    else:
+        count +=1
+        
+        
+#for ind, i in enumerate(tempcatdata):
+#    catdata_dyn[0] = i[:-1]
+#    if(i[-1] == i+1[-1]):
+#        ind +=1
+#    else:
+#        catdata_dyn[ind] = i[:-1] 
+print catdata_dyn   
+#count = 0
+#for i in tempcatdata:
+#    if(i[-1]==5):
+#        plt.plot(i)
+#        count += 1
+#print count        
+                         
+
+#print knnDynamic(trainset,realdata, 50)
+
+
 
   
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
@@ -206,19 +243,49 @@ for i in range(0, 20):
     l1 = np.append(l1, 70)
     u1 = np.append(u1, 180)
 t_lu = np.asarray(range(0,20))
-plt.plot(t_lu, u1,'r--' , t_lu, l1, 'r--')
+plt.plot(t_lu, u1,'r--', t_lu, l1, 'r--')
 plt.legend(loc=1)
-plt.axis([0, 19, 10, 350])
+plt.axis([0, 19, 10, 400])
 plt.ylabel('glucose content (mg/dL)')
-plt.xlabel('timesteps')
+plt.xlabel('timesteps: one measurement every 15 minutes')
 plt.show()
 
+
+#==============================================================================
+# Stuff, der noch gebraucht werden könnte
+#==============================================================================
+
+#df = pd.DataFrame(realdataset)
+#df.to_csv("realdataset.csv",  index=False)
+
+#stack the train- and testset together to have a bigger dataset
+#entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
 
 #plot the final centroids of the particular cluster 
 #centroids = k_means_clust(realdataset,6,15,100)
 #for i in centroids:   
     #plt.plot(i)
-        
+
+
+#D2 = skipmissingdata(realdata1)
+#D2new = np.array(D2) 
+#D2new.resize(486,20)
+#stack the two realsets together to have a bigger dataset
+#realdataset = np.vstack((D1new[:,:],D2new[:,:]))
+
+
+#==============================================================================
+# Daten von Manu, try some stuff
+#==============================================================================
+#test1 = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Stuff/Freestyle_Manu.csv",
+#                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
+#                         usecols = (2)) 
+#td = skipmissingdata(test1)
+#test = np.array(td) 
+#testdata = test[959:1029]
+#print max(testdata)
+#print len(testdata)
+#==============================================================================     
 
 
     

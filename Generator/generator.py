@@ -36,11 +36,11 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((200,21))
+        dataset = np.zeros((400,21))
         counter = 0
         for curve in categories:            
-            if(counter < 200):
-                for i in range(counter, counter +50):
+            if(counter < 400):
+                for i in range(counter, counter +100):
                     for j in range(0,21):
                         #generate the specific curve
                         c = curve.generate()
@@ -50,7 +50,7 @@ class Generator:
                             chat = np.append(chat, 0)
                         chat = np.append(chat, curve.Categorie)
                         dataset[i][j] = chat[j]
-                counter = counter + 50      
+                counter = counter + 100      
         return dataset
                        
         
@@ -76,10 +76,10 @@ class Generator:
     c = np.zeros((4,20))
     count = 0
     while(count<4):
-        for j in range(0,49):
-            c[count][:] += d[j+(50*count)][:-1]
+        for j in range(0,99):
+            c[count][:] += d[j+(100*count)][:-1]
         print c
-        c[count][:] /= 50
+        c[count][:] /= 100
         print c
         count +=1
 
