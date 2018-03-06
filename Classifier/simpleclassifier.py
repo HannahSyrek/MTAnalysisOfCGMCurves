@@ -9,8 +9,6 @@ the datasets.
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.metrics import classification_report
-import random
 import sys
 
 
@@ -19,8 +17,6 @@ import sys
 #==============================================================================
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
-#print trainset
-#print trainset.shape
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
 realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
@@ -28,12 +24,14 @@ realdata1 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3)) 
 realdata2 = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
-                         usecols = (3))     
+                         usecols = (3))  
+tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdataset.csv",
+                          delimiter = ",", dtype = None, skip_header = 1) 
 
 '''
 Implements a faster version of dynamic time wraping, includes w, a windows size. 
 Only mappings within this window size are considered which speeds up the inner
-loop of the computations. Good size for w seems to be w = 100.
+loop of the computations. Good size for w seems to be w = 50.
 '''
 def DTWDistanceFast(s1, s2,w):
     DTW={}
@@ -89,7 +87,7 @@ def knnStatic(train,test,w):
     realdata = np.array(test)
     catdata = np.concatenate((realdata, predsT), axis = 1)  
     df = pd.DataFrame(catdata)
-    df.to_csv("catdataset.csv",  index=False)     
+    df.to_csv("Data/catdataset.csv",  index=False)     
     category = 1
     meandata = np.zeros((4,20))
     #average the curves of the particular category
@@ -112,7 +110,7 @@ def knnStatic(train,test,w):
 Implements the k-NearestNeighbor classification to determine the similarity 
 between time series, iterate point by point over the hole dataset to find the 
 progression of the categories.
-(Takes round about 30 minutes for 9716 time series to run.)
+(Takes round about 90 minutes for 9716 time series to run.)
 '''
 def knnDynamic(train,test,w):
     predictions=[]
@@ -122,49 +120,29 @@ def knnDynamic(train,test,w):
         dyn_timeserie[i][:] = test[i:20+i]
     test = dyn_timeserie   
     #categorize all time series 
-    #count = 0
     for ind,i in enumerate(test):        
         min_dist=float('inf')
         closest_seq=[]
         print ind
-       
         for j in train:
             if LB_Keogh(i[:],j[:-1],10)<min_dist:
                 dist=DTWDistanceFast(i[:],j[:-1],w)
-                #print "dist", dist
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-                    #print min_dist
-        #assign all time series with a higher distance as 200 to a separate catgeory
-    
-        #print "mindist", min_dist
-        if(min_dist>50):
+        #assign all time series with a higher distance as 70 to a separate catgeory
+        if(min_dist>70):
             predictions.append(5.0)
         else:
-            predictions.append(closest_seq[-1]) 
-                    
+            predictions.append(closest_seq[-1])                     
     #produce the categorized dataset: catdata
+    #attention: the data includes repetitions of the assigned curves-> skipRepetitions
     predsT = np.array([predictions]).T
     realdata = np.array(test)
     catdata = np.concatenate((realdata, predsT), axis = 1)  
     df = pd.DataFrame(catdata)
-    df.to_csv("catdatasetStatic.csv",  index=False)     
-#    category = 1
-#    meandata = np.zeros((5,20))
-#    #average the curves of the particular category
-#    while(category<7):
-#        for j in range(0,5):
-#            count = 0
-#            for i in range(0,len(predictions)):      
-#                if(catdata[i][-1]==category):
-#                    meandata[j][:] += catdata[i][:-1]
-#                    count += 1           
-#            meandata[j][:] /= count
-#            category += 1
-#            if (category==3):
-#                category += 1
-    #return the averaged curves, one per categorie 
+    df.to_csv("Data/catdataset.csv",  index=False)     
+
     return catdata
 
 
@@ -182,6 +160,43 @@ def skipmissingdata(data):
             newdata.append(i)            
     return newdata
    
+ 
+'''
+Method to skip the repetitions in the dynamic categorized data.
+'''
+def skipRepetitions(data):    
+    catdata_dyn = np.zeros((len(data),21))
+    catdata_dyn[0][:] = tempcatdata[0][:]
+    count = 0
+    ind = 1
+    while(ind < len(data)):
+        if(catdata_dyn[count][-1] != data[ind][-1]):  
+            catdata_dyn[count+1][:] = data[ind][:]
+            count +=1
+            ind +=1
+        else:
+            ind +=1
+            
+    df = pd.DataFrame(catdata_dyn)
+    df.to_csv("Data/catdataWithoutRepetitions.csv",  index=False)       
+    return catdata_dyn
+
+
+
+ 
+'''
+Method to plot all assigned curves of the particular categorie.
+'''        
+def plotCategories(category): 
+    data = skipRepetitions(tempcatdata)     
+    count = 0
+    for i in data:
+        if(i[-1]==category):
+            plt.plot(i)
+            count += 1
+    return count        
+ 
+
 #==============================================================================
 #plot the results to visualize the found patterns
 #==============================================================================
@@ -189,52 +204,12 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 Data = skipmissingdata(realdata1)
 realdata = np.array(Data)
-#uncomment the resize method for knnStatic 
+#uncomment the resize method for knnStatic and averaged dtw curves
 #realdata.resize(486,20) 
 #curves = knnStatic(trainset,realdata,50)
-
-#curves =  knnDynamic(trainset,realdata, 50)
-#plt.plot(curves[0], label= '1: Normal')
-#plt.plot(curves[1], label= '2: Bolus zu groß')
-#plt.plot(curves[2], label= '4: Bolus zu klein')
-#plt.plot(curves[3], label= '5: Keine passende Kategorie')
-#plt.plot(curves[4], label= '6: Korrekturbolus')
-
-tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/catdataset.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)  
-print tempcatdata.shape
-#without the repeated ones
-catdata_dyn = np.zeros((1600,20))
-count = 0
-catdata_dyn[count] = tempcatdata[count][:-1]
-count = 1
-for i in range(0,1599):
-    if(catdata_dyn[i][-1] != tempcatdata[count][-1]):
-        catdata_dyn[i+1][:] = tempcatdata[count][:-1]
-    else:
-        count +=1
-        
-        
-#for ind, i in enumerate(tempcatdata):
-#    catdata_dyn[0] = i[:-1]
-#    if(i[-1] == i+1[-1]):
-#        ind +=1
-#    else:
-#        catdata_dyn[ind] = i[:-1] 
-print catdata_dyn   
-#count = 0
-#for i in tempcatdata:
-#    if(i[-1]==5):
-#        plt.plot(i)
-#        count += 1
-#print count        
-                         
-
 #print knnDynamic(trainset,realdata, 50)
-
-
-
-  
+print plotCategories(5)
+                        
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
 #the visualization
 l1 = []
@@ -251,9 +226,38 @@ plt.xlabel('timesteps: one measurement every 15 minutes')
 plt.show()
 
 
+
+
+
+
 #==============================================================================
 # Stuff, der noch gebraucht werden könnte
 #==============================================================================
+
+##################_mean of the dtw data, seems to be not the best idea###
+#    category = 1
+#    meandata = np.zeros((5,20))
+#    #average the curves of the particular category
+#    while(category<7):
+#        for j in range(0,5):
+#            count = 0
+#            for i in range(0,len(predictions)):      
+#                if(catdata[i][-1]==category):
+#                    meandata[j][:] += catdata[i][:-1]
+#                    count += 1           
+#            meandata[j][:] /= count
+#            category += 1
+#            if (category==3):
+#                category += 1
+    #return the averaged curves, one per categorie 
+
+
+#curves =  knnDynamic(trainset,realdata, 50)
+#plt.plot(curves[0], label= '1: Normal')
+#plt.plot(curves[1], label= '2: Bolus zu groß')
+#plt.plot(curves[2], label= '4: Bolus zu klein')
+#plt.plot(curves[3], label= '5: Keine passende Kategorie')
+#plt.plot(curves[4], label= '6: Korrekturbolus')
 
 #df = pd.DataFrame(realdataset)
 #df.to_csv("realdataset.csv",  index=False)
@@ -273,19 +277,6 @@ plt.show()
 #stack the two realsets together to have a bigger dataset
 #realdataset = np.vstack((D1new[:,:],D2new[:,:]))
 
-
-#==============================================================================
-# Daten von Manu, try some stuff
-#==============================================================================
-#test1 = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Stuff/Freestyle_Manu.csv",
-#                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
-#                         usecols = (2)) 
-#td = skipmissingdata(test1)
-#test = np.array(td) 
-#testdata = test[959:1029]
-#print max(testdata)
-#print len(testdata)
-#==============================================================================     
 
 
     
