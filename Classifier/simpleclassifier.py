@@ -208,7 +208,7 @@ realdata = np.array(Data)
 #realdata.resize(486,20) 
 #curves = knnStatic(trainset,realdata,50)
 #print knnDynamic(trainset,realdata, 50)
-print plotCategories(5)
+print plotCategories(6)
                         
 #fill vector u1 and l1 with the upper- and lower boundvalue to draw them into 
 #the visualization
