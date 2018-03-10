@@ -42,9 +42,7 @@ class Curve(object):
             curve = np.append(curve, thirdpart)
         return curve
       
-     
-    def getCategorie(self):
-        return self.Categorie
+    
         
         
         
