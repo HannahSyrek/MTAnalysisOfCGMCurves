@@ -73,7 +73,7 @@ def knnDynamic(train,test,w):
                     closest_seq=j
         #assign all time series with a higher distance as 70 respectively 20 to 
         #the rest catgeory
-        if(min_dist>20):
+        if(min_dist>18):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -87,8 +87,8 @@ def knnDynamic(train,test,w):
 
  
 realdata = np.array(skipmissingdata(realdata))
-print knnDynamic(trainset,realdata, 50)
-#print [plotCategories(1),plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print knnDynamic(trainset,realdata, 50)
+print plotCategories(6) #,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 
