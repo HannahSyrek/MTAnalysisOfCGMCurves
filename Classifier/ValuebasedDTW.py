@@ -66,19 +66,23 @@ def knnDynamic(train,test,w):
         closest_seq=[]
         print ind
         for j in train:
+            #For the derivation of the datapoints, substitute the following two lines with:
+            #if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
+                #dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
             if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
                 dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-        #assign all time series with a higher distance as 70 respectively 20 to 
-        #the rest catgeory
-        if(min_dist>18):
+        #assign all time series with a higher distance as 70 respectively 20 to the rest catgeory
+        #For the derivation of the datapoints, substitute the following line with:
+        #if(min_dist<15):
+        if(min_dist>15):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
     #produce the categorized dataset: catdata
-    #attention: the data includes repetitions of the assigned curves-> skipRepetitions
+    #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
     df.to_csv("Data/catdatasetDerivations.csv",  index=False)     
@@ -88,7 +92,7 @@ def knnDynamic(train,test,w):
  
 realdata = np.array(skipmissingdata(realdata))
 #print knnDynamic(trainset,realdata, 50)
-print plotCategories(6) #,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print plotCategories(5)# ,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 

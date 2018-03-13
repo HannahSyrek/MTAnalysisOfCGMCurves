@@ -33,7 +33,8 @@ realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3))  
 tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
                           delimiter = ",", dtype = None, skip_header = 1) 
-
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetLocalFeature.csv",
+                          delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
 replaced by -1.
@@ -72,7 +73,8 @@ def skipRepetitions(data):
 Method to plot all assigned curves of the particular category.
 '''        
 def plotCategories(category): 
-    data = skipRepetitions(tempcatdata)    
+    #data = skipRepetitions(tempcatdata)
+    data = tempdata    
     count = 0
     for i in data:
         if(i[-1]==category):
@@ -85,17 +87,70 @@ Method to calculate the derivation of a given point, as it is used in
 [Keogh, E. J., & Pazzani, M. J. (2001, April). Derivative dynamic time warping.
 In Proceedings of the 2001 SIAM International Conference on Data Mining
 (pp. 1-11). Society for Industrial and Applied Mathematics]. Except the first 
-and the last value of the timeserie.  Its derivation is computed dependend only
- from the second respectively the penultimate value. 
+and the last value of the timeserie. Its derivation is computed dependend only
+on the second respectively the penultimate value. 
 '''
 def derive(ts):
-    first_value = float(((ts[0]-ts[1]) + (ts[0]-ts[1]))/2)/2 
-    last_value = float(((ts[-1]-ts[-2]) + (ts[-1]-ts[-2]))/2)/2
-    new_timeserie = np.zeros((len(ts)))    
-    new_timeserie[0] = first_value
-    new_timeserie[-1] = last_value
+    new_timeserie = np.zeros((len(ts))) 
+    #set the first and the last derivation each depending on the follwoing respectively the previous point
+    new_timeserie[0] = float(((ts[0]-ts[1]) + (ts[0]-ts[1]))/2)/2 
+    new_timeserie[-1] = float(((ts[-1]-ts[-2]) + (ts[-1]-ts[-2]))/2)/2
+    #compute the derivation of every point in the time serie
     for i in range(1, len(ts)-1):
-        derivation = float(((ts[i]-ts[i-1]) + (ts[i+1]-ts[i-1]))/2)/2
-        new_timeserie[i] = derivation
+        new_timeserie[i] = float(((ts[i]-ts[i-1]) + (ts[i+1]-ts[i-1]))/2)/2        
     return new_timeserie
+
+
+'''
+Method to compute the local feature of a datapoint in the given time serie, as it is introduced in 
+[Xie, Y., & Wiltgen, B. (2010). Adaptive feature based dynamic time warping. 
+International Journal of Computer Science and Network Security, 10(1), 264-273.]
+Except the first and the last value of the timeserie. Its local feature is computed
+dependend only on the second respectively the penultimate value.
+'''
+def local_Feature(ts):
+    new_timeserie = np.zeros((len(ts),2))
+    #set the first and the last feature vector each depending on the follwoing respectively the previous point
+    new_timeserie[:][0] = [(ts[0]-ts[1]), (ts[0]-ts[1])]
+    new_timeserie[:][-1] = [(ts[-1]-ts[-2]), (ts[-1]-ts[-2])]
+    #compute the feature vector of every point in the timeseries according to the definition of Xie et al.
+    for i in range(1, len(ts)-1):
+        new_timeserie[:][i] = [(ts[i]-ts[i-1]), (ts[i]-ts[i+1])]
+    return new_timeserie
+
+
+'''
+Method to compute the global feature of a datapoint in the given time serie, as it is introduced in 
+[Xie, Y., & Wiltgen, B. (2010). Adaptive feature based dynamic time warping. 
+International Journal of Computer Science and Network Security, 10(1), 264-273.]
+Except the first and the last value of the timeserie. Its global feature is computed
+dependend only on the second respectively the penultimate value.
+'''
+def global_Feature(ts):
+    new_timeserie = np.zeros((len(ts),2))
+    #set the first and the last feature vector each depending on the follwoing 
+    #respectively the previous point, additionaly the second, cause by some
+    #access problems to vector elements in connection with division with zero in the case of i=1
+    new_timeserie[:][0] = [ ts[0] , ts[0]- ((sum(ts[1:])) / float(len(ts)-1)) ] 
+    new_timeserie[:][1] = [ ts[1]-ts[0] , ts[1]- ((sum(ts[2:])) / float(len(ts)-1)) ]
+    new_timeserie[:][-1] = [ ts[-1]- ((sum(ts[:-1])) / float(len(ts)-1)) , ts[-1] ] 
+    #compute the feature vector of every point in the timeseries according to the definition of Xie et al.       
+    for i in range(2, len(ts)-1):
+        new_timeserie[:][i] = [ ts[i]- (sum(ts[0:i])) / float(i-1) , 
+                                ts[i]- float((sum(ts[i+1:])) / float(len(ts)-i)) ]   
+    return new_timeserie
+
+
+
+##in()
+#a= [4,5,6,7,8]
+#print global_Feature(a)
+#print global_Feature(a)[0][1]
+
+
+
+
+
+
+
 
