@@ -2,6 +2,7 @@
 """
 Created on Sat Mar 10 16:06:59 2018
 @author: hannah syrek
+This script implements some needed utilities and parameter to run the classification algorithms.
 """
 
 #Imports
@@ -11,12 +12,16 @@ import matplotlib.pyplot as plt
 
 
 
+
+
 #Initilize some parameters
 ts_length = 20
 low_value = 70
 up_value = 180
 lower_bound = []
 upper_bound = []
+global w_i
+global w_j
 
 for i in range(0, ts_length):
     lower_bound.append(low_value)
@@ -26,14 +31,14 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 #read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
+train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
 realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))  
 tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
                           delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetLocalFeature.csv",
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAdaptiveFeaturebased18.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
@@ -53,34 +58,34 @@ def skipmissingdata(data):
 Method to skip the repetitions in the dynamic categorized data.
 '''
 def skipRepetitions(data):    
-    catdata_dyn = np.zeros((len(data),ts_length+1))
-    catdata_dyn[0][:] = tempcatdata[0][:]
+    cat_data = np.zeros((len(data),ts_length+1))
+    cat_data[0][:] = tempcatdata[0][:]
     count = 0
     ind = 1
     while(ind < len(data)):
-        if(catdata_dyn[count][-1] != data[ind][-1]):  
-            catdata_dyn[count+1][:] = data[ind][:]
+        if(cat_data[count][-1] != data[ind][-1]):  
+            cat_data[count+1][:] = data[ind][:]
             count +=1
             ind +=1
         else:
             ind +=1            
-    df = pd.DataFrame(catdata_dyn)
-    df.to_csv("Data/catdataWithoutRepetitions.csv", index=False)       
-    return catdata_dyn
+    #df = pd.DataFrame(catdata_dyn)
+    #df.to_csv("Data/catdataWithoutRepetitions.csv", index=False)       
+    return cat_data
 
  
 '''
 Method to plot all assigned curves of the particular category.
 '''        
 def plotCategories(category): 
-    #data = skipRepetitions(tempcatdata)
-    data = tempdata    
+    data = skipRepetitions(tempdata)   
     count = 0
     for i in data:
         if(i[-1]==category):
             plt.plot(i)
             count += 1
     return count        
+
 
 '''
 Method to calculate the derivation of a given point, as it is used in
@@ -99,6 +104,7 @@ def derive(ts):
     for i in range(1, len(ts)-1):
         new_timeserie[i] = float(((ts[i]-ts[i-1]) + (ts[i+1]-ts[i-1]))/2)/2        
     return new_timeserie
+
 
 
 '''
@@ -142,15 +148,69 @@ def global_Feature(ts):
 
 
 
-##in()
-#a= [4,5,6,7,8]
-#print global_Feature(a)
-#print global_Feature(a)[0][1]
-
-
-
-
-
-
-
-
+#'''
+#Method to claculate the max distances within the particular classes to run the
+#weight method.
+#'''
+#
+#def DTWDistance(s1, s2):
+#    DTW={}
+#    for i in range(-1,len(s1)):
+#      for j in range(-1,len(s2)):
+#         DTW[(i, j)] = float('inf')
+#    DTW[(-1, -1)] = 0
+#    for i in range(len(s1)):
+#      for j in range(len(s2)):
+#         dist= (s1[i]-s2[j])**2
+#         DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
+#    return np.sqrt(DTW[len(s1)-1, len(s2)-1])
+#
+#
+#'''
+#Method to compute the max distance within the classes.
+#'''
+#def max_Distance(classX, sequence):
+#    dists = [-10]
+#    for i in enumerate(classX):
+#        dists.append(DTW(i,sequence))
+#        max_dist = max(dists)
+#    return max_dist
+#  
+#
+#        max_class1 =max(dists[0  :99][-1])
+#        max_class2 =max(dists[100:199][-1])
+#        max_class4 =max(dists[200:299][-1])
+#        max_class6 =max(dists[300:399][-1])
+#        
+#        num_class1 =len(dists[0  :99][-1])
+#        num_class2 =len(dists[100:199][-1])
+#        num_class4 =len(dists[200:299][-1])
+#        num_class6 =len(dists[300:399][-1])
+#        
+#        
+#        if(dists[100:399][-1]<=max_class1):
+#            cum1+=1
+#        
+#        
+#        
+#        
+#        for i in enumerate(dists):
+#            for jnd, j in enumerate(dists):
+#                jnd +=1
+#                if(i[-1]>=j[-1])
+#        for time_seq in enumerate(trainset):
+#            if(time_seq[-1]==1):
+#             class1= np.hstack(class1,time_seq)   
+#             max_dist = max_Distance(class1,time_seq)
+#             num_class1 =len(class1[0])
+#            elif(time_seq[-1]==2):
+#             class2= np.hstack(class2,time_seq)
+#             max_dist = max_Distance(class2,time_seq)
+#            elif(time_seq[-1]==4):
+#             class4= np.hstack(class4,time_seq)
+#             max_dist = max_Distance(class4)
+#            elif(time_seq[-1]==6):
+#             class6= np.hstack(class6,time_seq)
+#             max_dist = max_Distance(class6, time_seq)
+#
+#            maxDistclass1 =   

@@ -36,11 +36,11 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((400,21))
+        dataset = np.zeros((200,21))
         counter = 0
         for curve in categories:            
-            if(counter < 400):
-                for i in range(counter, counter +100):
+            if(counter < 200):
+                for i in range(counter, counter +50):
                     for j in range(0,21):
                         #generate the specific curve
                         c = curve.generate()
@@ -50,7 +50,7 @@ class Generator:
                             chat = np.append(chat, 0)
                         chat = np.append(chat, curve.Categorie)
                         dataset[i][j] = chat[j]
-                counter = counter + 100      
+                counter = counter + 50      
         return dataset
                        
         
@@ -60,7 +60,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("trainset.csv",  index=False)
+        df.to_csv("train_set.csv",  index=False)
         #df.to_csv("testset.csv")
         
 

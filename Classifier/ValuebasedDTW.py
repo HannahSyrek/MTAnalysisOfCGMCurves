@@ -2,8 +2,9 @@
 """
 Created on Sat Feb 17 09:15:20 2018
 @author: hannah syrek
-This script implements the DTW algorithm to calculate the distances between time
-series and classifies them with 1-Nearest-Neighbour.
+
+This script implements the Classic and Derivative DTW algorithm to calculate 
+the distances between time series and classifies them with 1-Nearest-Neighbour.
 """
 #Imports
 import numpy as np
@@ -106,110 +107,7 @@ plt.legend(loc=1)
 plt.axis([0, ts_length-1, 10, 400])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
-plt.show()
-
-
-
-
-
-
-#==============================================================================
-# Stuff, der noch gebraucht werden könnte
-#==============================================================================
-
-##################_mean of the dtw data, seems to be not the best idea###
-#    category = 1
-#    meandata = np.zeros((5,20))
-#    #average the curves of the particular category
-#    while(category<7):
-#        for j in range(0,5):
-#            count = 0
-#            for i in range(0,len(predictions)):      
-#                if(catdata[i][-1]==category):
-#                    meandata[j][:] += catdata[i][:-1]
-#                    count += 1           
-#            meandata[j][:] /= count
-#            category += 1
-#            if (category==3):
-#                category += 1
-    #return the averaged curves, one per categorie 
-
-
-#curves =  knnDynamic(trainset,realdata, 50)
-#plt.plot(curves[0], label= '1: Normal')
-#plt.plot(curves[1], label= '2: Bolus zu groß')
-#plt.plot(curves[2], label= '4: Bolus zu klein')
-#plt.plot(curves[3], label= '5: Keine passende Kategorie')
-#plt.plot(curves[4], label= '6: Korrekturbolus')
-
-#df = pd.DataFrame(realdataset)
-#df.to_csv("realdataset.csv",  index=False)
-
-#stack the train- and testset together to have a bigger dataset
-#entiredataset = np.vstack((trainset[:,:-1],testset[:,:-1]))
-
-#plot the final centroids of the particular cluster 
-#centroids = k_means_clust(realdataset,6,15,100)
-#for i in centroids:   
-    #plt.plot(i)
-
-
-#D2 = skipmissingdata(realdata1)
-#D2new = np.array(D2) 
-#D2new.resize(486,20)
-#stack the two realsets together to have a bigger dataset
-#realdataset = np.vstack((D1new[:,:],D2new[:,:]))
-
-
-#uncomment the resize method for knnStatic and averaged dtw curves
-#realdata.resize(486,20) 
-#curves = knnStatic(trainset,realdata,50)
-'''
-Implements the k-NearestNeighbor classification to determine the similarity 
-between the time series and classify the dataset with real cgm values.
-(Takes round about 5 minutes to run.)
-'''
-#def knnStatic(train,test,w):
-#    predictions=[]
-#    #categorize die time series
-#    for ind,i in enumerate(test):
-#        min_dist=float('inf')
-#        closest_seq=[]
-#        print ind 
-#        for j in train:
-#            if LB_Keogh(i[:],j[:-1],10)<min_dist:
-#                dist=DTWDistanceFast(i[:],j[:-1],w)
-#                if dist<min_dist:
-#                    min_dist=dist     
-#                    closest_seq=j
-#        predictions.append(closest_seq[-1])
-#    #produce the categorized dataset: catdata
-#    predsT = np.array([predictions]).T
-#    realdata = np.array(test)
-#    catdata = np.concatenate((realdata, predsT), axis = 1)  
-#    df = pd.DataFrame(catdata)
-#    df.to_csv("Data/catdataset.csv",  index=False)     
-#    category = 1
-#    meandata = np.zeros((4,20))
-#    #average the curves of the particular category
-#    while(category<7):
-#        for j in range(0,4):
-#            count = 0
-#            for i in range(0,len(predictions)):      
-#                if(catdata[i][-1]==category):
-#                    meandata[j][:] += catdata[i][:-1]
-#                    count += 1           
-#            meandata[j][:] /= count
-#            category += 1
-#            if (category==3 or category==5):
-#                category += 1
-#    #return the averaged curves, one per categorie         
-#    return meandata
-
-
-    
-    
-    
+plt.show()    
     
     
     
