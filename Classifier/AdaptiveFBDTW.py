@@ -107,9 +107,9 @@ def knn_AdaptiveFeaturebased(train,test,w):
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-        #assign all time series with a higher distance as 30 to the rest catgeory
-        print min_dist
-        if(min_dist>16):
+        #assign all time series with a higher distance as 15 to the rest catgeory
+        #print min_dist
+        if(min_dist>15):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -117,7 +117,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetAdaptiveFeaturebased16400.csv",  index=False)     
+    df.to_csv("Data/catdatasetAdaptiveFeaturebased15400.csv",  index=False)     
     return cat_data
 
     
@@ -209,8 +209,8 @@ def normalize(w1,w2):
 
 realdata = np.array(skipmissingdata(realdata))
 #realdata.resize(486,20) 
-#print knn_AdaptiveFeaturebased(train_set,realdata, 50)
-print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+print knn_AdaptiveFeaturebased(trainset,realdata, 50)
+#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 

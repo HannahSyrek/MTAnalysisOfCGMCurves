@@ -31,14 +31,14 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 #read the needed data from .csv files
-train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
 realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))  
-tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
-                          delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAdaptiveFeaturebased16400.csv",
+#tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
+ #                         delimiter = ",", dtype = None, skip_header = 1) 
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAdaptiveFeaturebased15.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
@@ -59,7 +59,7 @@ Method to skip the repetitions in the dynamic categorized data.
 '''
 def skipRepetitions(data):    
     cat_data = np.zeros((len(data),ts_length+1))
-    cat_data[0][:] = tempcatdata[0][:]
+    cat_data[0][:] = data[0][:]
     count = 0
     ind = 1
     while(ind < len(data)):

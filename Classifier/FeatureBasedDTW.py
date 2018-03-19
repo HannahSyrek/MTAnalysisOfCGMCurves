@@ -119,7 +119,7 @@ def knn_Featurebased(train,test,w):
 realdata = np.array(skipmissingdata(realdata))
 #realdata.resize(486,20) 
 #print knn_Featurebased(trainset,realdata, 50)
-print plotCategories(6)#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 
