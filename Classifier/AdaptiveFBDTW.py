@@ -13,8 +13,8 @@ import sys
 from utilities import *
 
 #set wi and wj for the first iteration
-w_i = 1
-w_j = 0
+#w_i = 1
+#w_j = 0
 
 '''
 Implements a faster version of dynamic time wraping, includes w, a windows size. 
@@ -88,8 +88,11 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
-    weights = weighting_Algo(train)
-    w_i = weights[0]
+    #weights = weighting_Algo(train)
+    weights = normalize(-742,-700)
+    global w_i 
+    w_i= weights[0]
+    global w_j
     w_j = weights[1]
     dyn_timeserie = np.zeros((9716,ts_length))
     #save all possible time series in a new matrix to iterate over all 
@@ -105,11 +108,13 @@ def knn_AdaptiveFeaturebased(train,test,w):
             if LB_Keogh((i[:]),(j[:-1]),10)<min_dist:
                 dist=DTWDistanceFast((i[:]),(j[:-1]),w)
                 if dist<min_dist:
-                    min_dist=dist     
+                    min_dist=dist
+                    
                     closest_seq=j
+                    #print min_dist   
         #assign all time series with a higher distance as 15 to the rest catgeory
         #print min_dist
-        if(min_dist>15):
+        if(min_dist>24):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -117,7 +122,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetAdaptiveFeaturebased15400.csv",  index=False)     
+    df.to_csv("Data/catdatasetAdaptiveFeaturebased15400new.csv",  index=False)     
     return cat_data
 
     
@@ -151,6 +156,8 @@ Journal of Computer Science and Network Security, 10(1), 264-273.]
 '''
 def weighting_Algo(trainset):
     w=[]
+    global w_i
+    global w_j
     for i in range(0,2):
         if(i==0):
             w_i=1
@@ -179,8 +186,11 @@ def weighting_Algo(trainset):
             class_ +=1
             if(class_==3 or class_==5):
                 class_+=1
+        print num_same_classes,num_diff_classes
         w_i = sum(np.array(num_same_classes) - np.array(num_diff_classes))
+        print w_i
         w.append(w_i)  
+    #return w[0],w[1]    
     return normalize(w[0],w[1])
 
 '''
@@ -190,27 +200,31 @@ International Journal of Computer Science and Network Security, 10(1), 264-273.]
 '''
 def normalize(w1,w2):
     if(w1>0 and w2>0):
-        w1=w1/float(w1+w2)
-        w2=w2/float(w1+w2)
+        w1_new=w1/float(w1+w2)
+        w2_new=w2/float(w1+w2)
     elif(w1>0 and w2<=0):
-        w1=1 
-        w2=0
+        w1_new=1 
+        w2_new=0
     elif(w1<=0 and w2>0):
-        w1=0
-        w2=1
+        w1_new=0
+        w2_new=1
     elif(w1<0 and w2<0):
-        w1=-w2/float(-(w1+w2))
-        w2=-w1/float(-(w1+w2))
+        w1_new=(-w2)/float(-(w1+w2))
+        w2_new=(-w1)/float(-(w1+w2))
     else:
         w1=w2=0.5
-    return [w1, w2]
+    return [w1_new, w2_new]
 
 
 
 realdata = np.array(skipmissingdata(realdata))
-#realdata.resize(486,20) 
-print knn_AdaptiveFeaturebased(trainset,realdata, 50)
-#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print knn_AdaptiveFeaturebased(trainset,realdata, 50)
+
+#print weighting_Algo(trainset)
+#print normalize((-752),(-752)) vorher
+#print normalize(-742,-700) nachher
+#print normalize(-356,-330) # 200 samples
+print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 
