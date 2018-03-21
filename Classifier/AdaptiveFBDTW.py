@@ -88,11 +88,11 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
-    #weights = weighting_Algo(train)
-    weights = normalize(-742,-700)
-    global w_i 
+    weights = weighting_Algo(train)
+    #weights = normalize(-742,-700)
+    #global w_i 
     w_i= weights[0]
-    global w_j
+    #global w_j
     w_j = weights[1]
     dyn_timeserie = np.zeros((9716,ts_length))
     #save all possible time series in a new matrix to iterate over all 
@@ -109,12 +109,10 @@ def knn_AdaptiveFeaturebased(train,test,w):
                 dist=DTWDistanceFast((i[:]),(j[:-1]),w)
                 if dist<min_dist:
                     min_dist=dist
-                    
-                    closest_seq=j
-                    #print min_dist   
-        #assign all time series with a higher distance as 15 to the rest catgeory
+                    closest_seq=j  
+        #assign all time series with a higher distance as 23 to the rest catgeory
         #print min_dist
-        if(min_dist>24):
+        if(min_dist>23):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -189,8 +187,7 @@ def weighting_Algo(trainset):
         print num_same_classes,num_diff_classes
         w_i = sum(np.array(num_same_classes) - np.array(num_diff_classes))
         print w_i
-        w.append(w_i)  
-    #return w[0],w[1]    
+        w.append(w_i)      
     return normalize(w[0],w[1])
 
 '''
@@ -218,13 +215,13 @@ def normalize(w1,w2):
 
 
 realdata = np.array(skipmissingdata(realdata))
-#print knn_AdaptiveFeaturebased(trainset,realdata, 50)
+print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 
 #print weighting_Algo(trainset)
 #print normalize((-752),(-752)) vorher
 #print normalize(-742,-700) nachher
 #print normalize(-356,-330) # 200 samples
-print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 
