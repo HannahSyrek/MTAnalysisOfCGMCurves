@@ -38,7 +38,7 @@ def DTWDistanceFast(s1, s2,w):
          #Feature Based Dynamic Time Warping, Xie et al.]
          dist_local = abs(loc_Feat1[i][0]-loc_Feat2[j][0]) + abs(loc_Feat1[i][1]-loc_Feat2[j][1])
          dist_global = abs(glo_Feat1[i][0]-glo_Feat2[j][0]) + abs(glo_Feat1[i][1]-glo_Feat2[j][1])
-         #weighted local and global distance         
+         #weighted local and global distance 
          dist= (w_i *dist_local) + (w_j *dist_global)
          DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
     return np.sqrt(DTW[len(s1)-1, len(s2)-1])
@@ -69,13 +69,13 @@ def LB_Keogh(s1,s2,r):
             if i>s2[upper_bound]:
                 dist_local = abs(loc_Feat1[ind][0]-loc_Feat2[upper_bound][0])+abs(loc_Feat1[ind][1]-loc_Feat2[upper_bound][1])
                 dist_global = abs(glo_Feat1[ind][0]-glo_Feat2[upper_bound][0])+abs(glo_Feat1[ind][1]-glo_Feat2[upper_bound][1])
-                #weighted local and global distance                   
+                #weighted local and global distance   
                 LB_sum= LB_sum + (w_i *dist_local) + (w_j *dist_global)
 
             elif i<s2[lower_bound]:
                 dist_local = abs(loc_Feat1[ind][0]-loc_Feat2[lower_bound][0])+abs(loc_Feat1[ind][1]-loc_Feat2[lower_bound][1])
                 dist_global = abs(glo_Feat1[ind][0]-glo_Feat2[lower_bound][0])+abs(glo_Feat1[ind][1]-glo_Feat2[lower_bound][1])
-                #weighted local and global distance                 
+                #weighted local and global distance               
                 LB_sum= LB_sum + (w_i *dist_local) + (w_j *dist_global)
 
     return np.sqrt(LB_sum)
@@ -88,11 +88,13 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
-    weights = weighting_Algo(train)
-    #weights = normalize(-742,-700)
-    #global w_i 
+    #weights = weighting_Algo(train)
+    
+    weights = normalize(-728,-663)
+    print weights
+    global w_i 
     w_i= weights[0]
-    #global w_j
+    global w_j
     w_j = weights[1]
     dyn_timeserie = np.zeros((9716,ts_length))
     #save all possible time series in a new matrix to iterate over all 
@@ -102,17 +104,20 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
+        #print min_dist
         closest_seq=[]
         print ind
         for j in train:
             if LB_Keogh((i[:]),(j[:-1]),10)<min_dist:
                 dist=DTWDistanceFast((i[:]),(j[:-1]),w)
+                #print "dist:     ",dist
                 if dist<min_dist:
                     min_dist=dist
                     closest_seq=j  
-        #assign all time series with a higher distance as 23 to the rest catgeory
+                    #print "mind_dist:              ", min_dist
+        #assign all time series with a higher distance as 30 to the rest catgeory
         #print min_dist
-        if(min_dist>23):
+        if(min_dist>27):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -120,7 +125,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetAdaptiveFeaturebased15400new.csv",  index=False)     
+    df.to_csv("Data/catdatasetAFB27.csv",  index=False)     
     return cat_data
 
     
@@ -221,7 +226,7 @@ print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 #print normalize((-752),(-752)) vorher
 #print normalize(-742,-700) nachher
 #print normalize(-356,-330) # 200 samples
-#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print [plotCategories(1)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 

@@ -103,7 +103,7 @@ def knn_Featurebased(train,test,w):
                     min_dist=dist     
                     closest_seq=j
         #assign all time series with a higher distance as 30 to the rest catgeory
-        if(min_dist>35):
+        if(min_dist>32):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -111,13 +111,12 @@ def knn_Featurebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetFeaturebased.csv",  index=False)     
+    df.to_csv("Data/catdatasetFB32.csv",  index=False)     
     return cat_data
 
 
 
 realdata = np.array(skipmissingdata(realdata))
-#realdata.resize(486,20) 
 #print knn_Featurebased(trainset,realdata, 50)
 print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 

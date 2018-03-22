@@ -38,7 +38,7 @@ realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3))  
 #tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
  #                         delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAdaptiveFeaturebased15400new.csv",
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAFB30.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
@@ -98,13 +98,12 @@ on the second respectively the penultimate value.
 def derive(ts):
     new_timeserie = np.zeros((len(ts))) 
     #set the first and the last derivation each depending on the follwoing respectively the previous point
-    new_timeserie[0] = float(((ts[0]-ts[1]) + (ts[0]-ts[1]))/2)/2 
-    new_timeserie[-1] = float(((ts[-1]-ts[-2]) + (ts[-1]-ts[-2]))/2)/2
+    new_timeserie[0] = (ts[0]-ts[1]) 
+    new_timeserie[-1] = (ts[-1]-ts[-2])
     #compute the derivation of every point in the time serie
     for i in range(1, len(ts)-1):
-        new_timeserie[i] = float(((ts[i]-ts[i-1]) + (ts[i+1]-ts[i-1]))/2)/2        
+        new_timeserie[i] = float((ts[i]-ts[i-1]) + ((ts[i+1]-ts[i-1])/2))/2        
     return new_timeserie
-
 
 
 '''
