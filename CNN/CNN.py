@@ -121,14 +121,14 @@ with tf.Session(graph=graph) as sess:
     
 # Plot training and test loss
 t = np.arange(iteration-1)
-
 plt.figure(figsize = (6,6))
-plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b-')
+plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
 plt.xlabel("iteration")
 plt.ylabel("Loss")
 plt.legend(['train','validation'], loc='upper right')
 plt.show()
 
+# PLot Accuracy 
 plt.figure(figsize = (6,6))  
 plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
 plt.xlabel("iteration")

@@ -19,7 +19,7 @@ def read_data(data_path):
     n_steps = 20
     n_channels= 1
     labels = []
-    data = np.zeros((400,20))    
+    data = np.zeros((800,20))    
     # Read dataset
     samples = np.genfromtxt(data_path, delimiter = ",", skip_header = 1)
     # Read labels
