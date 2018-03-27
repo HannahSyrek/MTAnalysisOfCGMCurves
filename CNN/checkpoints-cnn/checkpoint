@@ -1,0 +1,2 @@
+model_checkpoint_path: "dia.ckpt"
+all_model_checkpoint_paths: "dia.ckpt"

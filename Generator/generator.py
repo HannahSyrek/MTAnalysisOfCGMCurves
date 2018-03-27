@@ -60,7 +60,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("train_set.csv",  index=False)
+        df.to_csv("test_set.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 

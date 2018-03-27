@@ -88,9 +88,9 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
-    #weights = weighting_Algo(train)
+    weights = weighting_Algo(train)
     
-    weights = normalize(-728,-663)
+    #weights = normalize(-728,-663)
     print weights
     global w_i 
     w_i= weights[0]
@@ -117,7 +117,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
                     #print "mind_dist:              ", min_dist
         #assign all time series with a higher distance as 30 to the rest catgeory
         #print min_dist
-        if(min_dist>27):
+        if(min_dist>26):
             predictions.append(5.0)
         else:
             predictions.append(closest_seq[-1])                     
@@ -125,7 +125,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetAFB27.csv",  index=False)     
+    df.to_csv("Data/catdatasetAFB26.csv",  index=False)     
     return cat_data
 
     
@@ -226,7 +226,7 @@ print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 #print normalize((-752),(-752)) vorher
 #print normalize(-742,-700) nachher
 #print normalize(-356,-330) # 200 samples
-#print [plotCategories(1)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print [plotCategories(1),plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 

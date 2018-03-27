@@ -38,7 +38,7 @@ realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3))  
 #tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
  #                         delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAFB30.csv",
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAFB27.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
