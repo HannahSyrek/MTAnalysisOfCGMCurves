@@ -33,12 +33,14 @@ time_steps = np.asarray(range(0,ts_length))
 #read the needed data from .csv files
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
+testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
 realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))  
 #tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
  #                         delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetAFB27.csv",
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataset.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
@@ -69,16 +71,43 @@ def skipRepetitions(data):
             ind +=1
         else:
             ind +=1            
-    #df = pd.DataFrame(catdata_dyn)
-    #df.to_csv("Data/catdataWithoutRepetitions.csv", index=False)       
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/catdataWithoutRepetitions.csv", index=False)       
     return cat_data
 
- 
+'''
+'''
+def decode_classes(data):
+    for i in data:
+        if(i[-1]==0.0):
+            i[-1] = 1.0
+        if(i[-1]==1.0):
+             i[-1] = 2.0
+        if(i[-1]==2.0):
+             i[-1] = 4.0
+        if(i[-1]==3.0):
+             i[-1] = 6.0
+    return data
+
+
+#   
+#'''
+#'''
+#def save_overlap_data(data):
+#    dyn_timeserie = np.zeros((607,ts_length))
+#    #save all possible time series in a new matrix to iterate over all 
+#    for i in range(0,607):
+#        dyn_timeserie[i][:] = data[i*15:ts_length+(i*15)]
+#    new_data = dyn_timeserie 
+#    df = pd.DataFrame(new_data)
+#    df.to_csv("Data/overlap_25_percent_data.csv",  index=False)  
+#
+#    
 '''
 Method to plot all assigned curves of the particular category.
 '''        
 def plotCategories(category): 
-    data = skipRepetitions(tempdata)   
+    data = skipRepetitions(tempdata)
     count = 0
     for i in data:
         if(i[-1]==category):

@@ -1,2 +1,2 @@
-model_checkpoint_path: "dia.ckpt"
-all_model_checkpoint_paths: "dia.ckpt"
+model_checkpoint_path: "diabetes.ckpt"
+all_model_checkpoint_paths: "diabetes.ckpt"

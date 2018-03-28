@@ -7,6 +7,7 @@ of diabetes type 1 patients.
 # Imports
 import numpy as np
 import os
+import pandas as pd
 from utilities import *
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
@@ -16,9 +17,16 @@ import matplotlib.pyplot as plt
 # Prepare data
 X_train, labels_train = read_data(data_path = "./Data/train_set.csv")
 X_test, labels_test = read_data(data_path = "./Data/test_set.csv")
+_raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
+data = np.zeros((9716,20))  
+for i in range(0,len(_raw)):
+    data[i][:] = _raw[i][:]
+X_raw = data.reshape((9716, 20, 1))     
+print (X_raw)
 
 # Normalize
 X_train, X_test = standardize(X_train, X_test)
+X_train, X_raw = standardize(X_train, X_raw)
 X_tr, X_vld, lab_tr, lab_vld = train_test_split(X_train, labels_train, stratify = labels_train, random_state = 123)
 
 lab_tr = change_label(lab_tr)
@@ -69,6 +77,7 @@ with graph.as_default():
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels_))
     optimizer = tf.train.AdamOptimizer(learning_rate_).minimize(cost)
     # Accuracy
+    predictions = tf.argmax(logits,1)
     correct_pred = tf.equal(tf.argmax(logits,1), tf.argmax(labels_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
 
@@ -83,6 +92,7 @@ train_acc = []
 train_loss = []
 with graph.as_default():
     saver = tf.train.Saver()
+    
 with tf.Session(graph=graph) as sess:
     sess.run(tf.global_variables_initializer())
     iteration = 1
@@ -117,24 +127,42 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dia.ckpt")
+    saver.save(sess, "checkpoints-cnn/diabetes.ckpt")
     
-# Plot training and test loss
-t = np.arange(iteration-1)
-plt.figure(figsize = (6,6))
-plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
-plt.xlabel("iteration")
-plt.ylabel("Loss")
-plt.legend(['train','validation'], loc='upper right')
-plt.show()
+## Plot training and test loss
+#t = np.arange(iteration-1)
+#plt.figure(figsize = (6,6))
+#plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
+#plt.xlabel("iteration")
+#plt.ylabel("Loss")
+#plt.legend(['train','validation'], loc='upper right')
+#plt.show()
+#
+## PLot Accuracy 
+#plt.figure(figsize = (6,6))  
+#plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
+#plt.xlabel("iteration")
+#plt.ylabel("Accuracy")
+#plt.legend(['train','validation'], loc='upper right')
+#plt.show()
 
-# PLot Accuracy 
-plt.figure(figsize = (6,6))  
-plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
-plt.xlabel("iteration")
-plt.ylabel("Accuracy")
-plt.legend(['train','validation'], loc='upper right')
-plt.show()
+# Evaluate on test set
+test_acc = []
+print (X_test.shape)
+print(X_raw.shape)
+with tf.Session(graph=graph) as sess:
+    saver.restore(sess, tf.train.latest_checkpoint('checkpoints-cnn'))
+    feed = {inputs_ : X_raw, keep_prob_ : 1}
+    preds = sess.run(predictions, feed_dict=feed)
+    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1)  
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/categorized_dataset.csv",  index=False)  
+#    for x_t, y_t in get_batches(X_test, y_test, batch_size):
+#        feed = {inputs_ : x_t, labels_ : y_t, keep_prob_ : 1}
+#        batch_acc = sess.run(predictions, feed_dict=feed)
+        #test_acc.append(batch_acc)
+    #print("Test accuracy: {:.6f})".format(np.mean(test_acc)))
+    print("Predictions:", preds)
     
     
     
