@@ -57,12 +57,12 @@ progression of the categories.
 '''
 def knnDynamic(train,test,w):
     predictions=[]
-    y_true = []
-#    dyn_timeserie = np.zeros((9716,ts_length))
-#    #save all possible 9716 time series in a new matrix to iterate over all 
-#    for i in range(0,len(test)-(ts_length-1)):
-#        dyn_timeserie[i][:] = test[i:ts_length+i]
-#    test = dyn_timeserie   
+    #y_true = []
+    dyn_timeserie = np.zeros((9716,ts_length))
+    #save all possible 9716 time series in a new matrix to iterate over all 
+    for i in range(0,len(test)-(ts_length-1)):
+        dyn_timeserie[i][:] = test[i:ts_length+i]
+    test = dyn_timeserie   
     #categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -77,31 +77,31 @@ def knnDynamic(train,test,w):
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-                    print min_dist
+                    #print min_dist
         #assign all time series with a higher distance as 58, respectively 13 for the derivative version, to the rest catgeory
         #For the derivation of the datapoints, substitute the following line with:
         #if(min_dist>20):
-#        if(min_dist>58):
-#            predictions.append(5.0)
-#        else:
-        predictions.append(closest_seq[-1])  
-        y_true.append(i[-1])                   
+        if(min_dist>18):
+            predictions.append(5.0)
+        else:
+            predictions.append(closest_seq[-1])  
+        #y_true.append(i[-1])                   
     #produce the categorized dataset: catdata
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy
-    print y_true, predictions
-    return accuracy_score(y_true,predictions)
-#    cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
-#    df = pd.DataFrame(cat_data)
-#    df.to_csv("Data/catdatasetdev20.csv",  index=False)     
-#    return cat_data
+    #print y_true, predictions
+    #return accuracy_score(y_true,predictions)
+    cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/catdatasetVBDTW_mean18.csv",  index=False)     
+    return cat_data
 
 
  
-#realdata = np.array(skipmissingdata(realdata))
-#print knnDynamic(trainset,realdata, 50)
-print "accuracy rate: ", knnDynamic(trainset,testset, 50)
-#print [plotCategories(1),plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+realdata = np.array(skipmissingdata(realdata))
+#print knnDynamic(train_set,realdata, 50)
+#print "accuracy rate: ", knnDynamic(trainset,testset, 50)
+print [plotCategories(1),plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 
 

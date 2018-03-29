@@ -32,6 +32,8 @@ time_steps = np.asarray(range(0,ts_length))
 
 #read the needed data from .csv files
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
+train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/generalizedSamples/generalized_Curves.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
@@ -40,7 +42,7 @@ realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          usecols = (3))  
 #tempcatdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDerivations.csv",
  #                         delimiter = ",", dtype = None, skip_header = 1) 
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataset.csv",
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetVBDTW_mean18.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 '''
 Skip the missing cgm values in the real data. Missing values were previously 

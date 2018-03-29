@@ -6,8 +6,8 @@ Created on Mon Mar 19 13:36:23 2018
 Script to label manually a test dataset to compute the accuracy rate of the implemented classifier.
 """
 #Imports
-#import os
-#os.chdir("/home/hannah/Dokumente/MTAnalysisOfCGMCurves")
+import os
+os.chdir("/home/hannah/Dokumente/MTAnalysisOfCGMCurves")
 from utilities import *
 import numpy as np
 import pandas as pd
@@ -24,9 +24,9 @@ for i in range(0,len(realdata)-(ts_length-1)):
 real_data = all_timeseries
   
 df = pd.DataFrame(real_data)
-df.to_csv("Data/datasetLabeled.csv",  index=False)   
+df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
 
-c_means=np.zeros((4,20))
+c_means=np.zeros((4,21))
 
 for i in range(0,20):
     c_means[0][i] = np.mean(trainset.T[i][0:100])
@@ -34,13 +34,17 @@ for i in range(0,20):
     c_means[2][i] = np.mean(trainset.T[i][200:300])
     c_means[3][i] = np.mean(trainset.T[i][300:400])
 
-
- 
+c_means[0][-1] = 1.0 
+c_means[1][-1] = 2.0  
+c_means[2][-1] = 4.0  
+c_means[3][-1] = 6.0    
+df = pd.DataFrame(c_means)
+df.to_csv("Classifier/generalizedSamples/generalized_Curves.csv",  index=False)  
    
 #for i in c_means:
 #    plt.plot(i)
 
-
+print train_set[0]
 
 reload(sys)  
 sys.setdefaultencoding('utf8')

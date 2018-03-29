@@ -43,7 +43,7 @@ y_test = one_hot(labels_test)
 batch_size = 100
 seq_len = 20
 learning_rate = 0.0001
-epochs = 1000
+epochs = 1500
 n_classes = 4
 n_channels = 20
 
@@ -77,7 +77,8 @@ with graph.as_default():
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels_))
     optimizer = tf.train.AdamOptimizer(learning_rate_).minimize(cost)
     # Accuracy
-    predictions = tf.argmax(logits,1)
+    logs = logits
+    predictions = tf.argmax(logits,1)  
     correct_pred = tf.equal(tf.argmax(logits,1), tf.argmax(labels_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
 
@@ -153,16 +154,21 @@ print(X_raw.shape)
 with tf.Session(graph=graph) as sess:
     saver.restore(sess, tf.train.latest_checkpoint('checkpoints-cnn'))
     feed = {inputs_ : X_raw, keep_prob_ : 1}
+    logs = sess.run(logs, feed_dict=feed)
     preds = sess.run(predictions, feed_dict=feed)
-    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1)  
-    df = pd.DataFrame(cat_data)
-    df.to_csv("Data/categorized_dataset.csv",  index=False)  
+    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
+    log_data = np.concatenate((np.array(logs), np.array([preds]).T), axis = 1)
+    df = pd.DataFrame(log_data)
+    df.to_csv("Data/logdata.csv", index=False)
+    #df = pd.DataFrame(cat_data)
+    #df.to_csv("Data/categorized_dataset.csv",  index=False)  
 #    for x_t, y_t in get_batches(X_test, y_test, batch_size):
 #        feed = {inputs_ : x_t, labels_ : y_t, keep_prob_ : 1}
 #        batch_acc = sess.run(predictions, feed_dict=feed)
         #test_acc.append(batch_acc)
     #print("Test accuracy: {:.6f})".format(np.mean(test_acc)))
     print("Predictions:", preds)
+    print("Logs:", logs)
     
     
     

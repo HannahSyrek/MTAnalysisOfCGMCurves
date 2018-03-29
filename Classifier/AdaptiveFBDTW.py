@@ -11,10 +11,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
+from sklearn.metrics import accuracy_score
 
-#set wi and wj for the first iteration
-#w_i = 1
-#w_j = 0
+
 
 '''
 Implements a faster version of dynamic time wraping, includes w, a windows size. 
@@ -88,6 +87,7 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
+    y_true = []
     #weights = weighting_Algo(train)
     
     weights = normalize(-728,-663)
@@ -96,11 +96,11 @@ def knn_AdaptiveFeaturebased(train,test,w):
     w_i= weights[0]
     global w_j
     w_j = weights[1]
-    dyn_timeserie = np.zeros((9716,ts_length))
-    #save all possible time series in a new matrix to iterate over all 
-    for i in range(0,len(test)-(ts_length-1)):
-        dyn_timeserie[i][:] = test[i:ts_length+i]
-    test = dyn_timeserie   
+#    dyn_timeserie = np.zeros((9716,ts_length))
+#    #save all possible time series in a new matrix to iterate over all 
+#    for i in range(0,len(test)-(ts_length-1)):
+#        dyn_timeserie[i][:] = test[i:ts_length+i]
+#    test = dyn_timeserie   
     #categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -117,16 +117,20 @@ def knn_AdaptiveFeaturebased(train,test,w):
                     #print "mind_dist:              ", min_dist
         #assign all time series with a higher distance as 30 to the rest catgeory
         #print min_dist
-        if(min_dist>24):
-            predictions.append(5.0)
-        else:
-            predictions.append(closest_seq[-1])                     
+#        if(min_dist>24):
+#            predictions.append(5.0)
+#        else:
+        predictions.append(closest_seq[-1])
+        y_true.append(i[-1])                        
     #produce the categorized dataset: catdata
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
-    df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetAFB24.csv",  index=False)     
-    return cat_data
+    # Accuracy
+    print y_true, predictions
+    return accuracy_score(y_true,predictions)
+#    cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
+#    df = pd.DataFrame(cat_data)
+#    df.to_csv("Data/catdatasetAFB24.csv",  index=False)     
+#    return cat_data
 
     
 '''
@@ -219,15 +223,15 @@ def normalize(w1,w2):
 
 
 
-realdata = np.array(skipmissingdata(realdata))
-print knn_AdaptiveFeaturebased(trainset,realdata, 50)
+#realdata = np.array(skipmissingdata(realdata))
+#print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 
 #print weighting_Algo(trainset)
 #print normalize((-752),(-752)) vorher
 #print normalize(-742,-700) nachher
 #print normalize(-356,-330) # 200 samples
-#print [plotCategories(1),plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
-
+#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+print knn_AdaptiveFeaturebased(trainset,testset, 50)
 
 
 #==============================================================================
