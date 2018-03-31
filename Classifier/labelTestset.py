@@ -23,8 +23,8 @@ for i in range(0,len(realdata)-(ts_length-1)):
     all_timeseries[i][:] = realdata[i:ts_length+i]
 real_data = all_timeseries
   
-df = pd.DataFrame(real_data)
-df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
+#df = pd.DataFrame(real_data)
+#df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
 
 c_means=np.zeros((4,21))
 
@@ -41,26 +41,30 @@ c_means[3][-1] = 6.0
 df = pd.DataFrame(c_means)
 df.to_csv("Classifier/generalizedSamples/generalized_Curves.csv",  index=False)  
    
-#for i in c_means:
-#    plt.plot(i)
-
-print train_set[0]
+tmpdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
+                          delimiter = ",", dtype = None, skip_header = 1)
+for i in tmpdata:
+     plt.plot(i[-1],np.amax(i[:-1]), '*')
 
 reload(sys)  
 sys.setdefaultencoding('utf8')
-
-plt.plot(time_steps, c_means[0],label = "normal progression") 
-plt.plot(time_steps, c_means[1],label = "bolus to big")  
-plt.plot(time_steps, c_means[2],label = "bolus to small")  
-plt.plot(time_steps, c_means[3],label = "correction of the bolus") 
-
-
-plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-plt.legend(loc=1)
-plt.axis([0, ts_length-1, 10, 400])
-plt.ylabel('blood glucose content (mg/dL)')
-plt.xlabel('timesteps')
+plt.axis([-1, 4, -10, 30])
+plt.ylabel('activationValue')
+plt.xlabel('classes')
 plt.show()
+
+#plt.plot(time_steps, c_means[0],label = "normal progression") 
+#plt.plot(time_steps, c_means[1],label = "bolus to big")  
+#plt.plot(time_steps, c_means[2],label = "bolus to small")  
+#plt.plot(time_steps, c_means[3],label = "correction of the bolus") 
+#
+#
+#plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
+#plt.legend(loc=1)
+#plt.axis([0, ts_length-1, 10, 400])
+#plt.ylabel('blood glucose content (mg/dL)')
+#plt.xlabel('timesteps')
+#plt.show()
 
 #k=154
 #for i in range(k,k+1):
@@ -82,11 +86,11 @@ plt.show()
 #==============================================================================
 #plot the results to visualize the found patterns
 #==============================================================================
-reload(sys)  
-sys.setdefaultencoding('utf8')
-plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-plt.legend(loc=1)
-plt.axis([0, ts_length-1, 10, 400])
-plt.ylabel('blood glucose content (mg/dL)')
-plt.xlabel('timesteps')
-plt.show() 
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
+#plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
+#plt.legend(loc=1)
+#plt.axis([0, ts_length-1, 10, 400])
+#plt.ylabel('blood glucose content (mg/dL)')
+#plt.xlabel('timesteps')
+#plt.show() 

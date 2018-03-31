@@ -21,8 +21,8 @@ class Generator:
     
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
-    C1 = Curve(1,160,85,100,23,180,70)  
-    C2 = Curve(2,220,40,100,23,180,70)
+    C1 = Curve(1,175,85,100,23,180,70)  
+    C2 = Curve(2,210,30,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
     C4 = Curve(4,230,200,100,23,180,70)      
     #C5 = Curve(5,200,40,100,250,180,70)      

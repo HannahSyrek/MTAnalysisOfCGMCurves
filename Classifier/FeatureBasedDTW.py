@@ -125,7 +125,7 @@ realdata = np.array(skipmissingdata(realdata))
 ##print knn_Featurebased(trainset,realdata, 50)
 #print knn_Featurebased(trainset,testset, 50)
 
-print [plotCategories(3)]#,plotCategories(1),plotCategories(2),plotCategories(3)] 
+print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(6),plotCategories(5)] 
 
 #save_overlap_data(realdata)
 
