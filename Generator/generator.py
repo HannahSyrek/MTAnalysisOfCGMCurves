@@ -21,36 +21,42 @@ class Generator:
     
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
-    C1 = Curve(1,175,85,100,23,180,70)  
-    C2 = Curve(2,210,30,100,23,180,70)
+    C1 = Curve(1,175,85,90,23,180,70)  
+    C2 = Curve(2,200,30,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
-    C4 = Curve(4,230,200,100,23,180,70)      
+    C4 = Curve(4,230,200,90,23,180,70)      
     #C5 = Curve(5,200,40,100,250,180,70)      
-    C6 = Curve(6,230,115,210,23,180,70)
+    C6 = Curve(6,230,80,200,23,180,70)
     global categories
     categories = [C1,C2,C4,C6]
 
+#    for i in range(0,20):
+#            c = C1.generate()
+#            print c
+#            print savgol_filter(c, 5, 3)
+#       
+#    c = C1.generate()
+#    print c
+#    print savgol_filter(c, 5, 3)
     '''
     Method to build the datamatrix.
     There are 50 curve samples per categorie, every curve exists out of 60 values.
     '''  
 
     def builddataset():
-        dataset = np.zeros((4,21))
+        dataset = np.zeros((40,21))
         counter = 0
         for curve in categories:            
-            if(counter < 4):
-                for i in range(counter, counter +1):
+            if(counter < 40):
+                for i in range(counter, counter +10):
+                    #generate the specific curve
+                    c = curve.generate()
+                    #smooth curve with savitzky_golay filter
+                    chat = savgol_filter(c, 5, 3)
+                    chat = np.append(chat, curve.Categorie)
                     for j in range(0,21):
-                        #generate the specific curve
-                        c = curve.generate()
-                        #smooth curve with savitzky_golay filter
-                        chat = savgol_filter(c, 5, 3)
-                        while(len(chat) < 20):
-                            chat = np.append(chat, 0)
-                        chat = np.append(chat, curve.Categorie)
                         dataset[i][j] = chat[j]
-                counter = counter + 1      
+                counter = counter + 10     
         return dataset
                        
         
@@ -60,7 +66,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("train_set4.csv",  index=False)
+        df.to_csv("test_setAFB.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 

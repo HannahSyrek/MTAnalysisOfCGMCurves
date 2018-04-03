@@ -87,50 +87,61 @@ progression of the categories.
 '''
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
-    y_true = []
-    #weights = weighting_Algo(train)
-    
-    weights = normalize(-728,-663)
+    dists = []
+    #y_true = []
+    weights = normalize(-121565, -106893)
     print weights
     global w_i 
     w_i= weights[0]
     global w_j
     w_j = weights[1]
-#    dyn_timeserie = np.zeros((9716,ts_length))
-#    #save all possible time series in a new matrix to iterate over all 
-#    for i in range(0,len(test)-(ts_length-1)):
-#        dyn_timeserie[i][:] = test[i:ts_length+i]
-#    test = dyn_timeserie   
-    #categorize all time series 
+    dyn_timeserie = np.zeros((9716,ts_length))
+    #save all possible time series in a new matrix to iterate over all 
+    for i in range(0,len(test)-(ts_length-1)):
+        dyn_timeserie[i][:] = test[i:ts_length+i]
+    test = dyn_timeserie   
+    # categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
-        #print min_dist
         closest_seq=[]
         print ind
         for j in train:
             if LB_Keogh((i[:]),(j[:-1]),10)<min_dist:
                 dist=DTWDistanceFast((i[:]),(j[:-1]),w)
-                #print "dist:     ",dist
                 if dist<min_dist:
                     min_dist=dist
                     closest_seq=j  
-                    #print "mind_dist:              ", min_dist
         #assign all time series with a higher distance as 30 to the rest catgeory
-        #print min_dist
-#        if(min_dist>24):
-#            predictions.append(5.0)
-#        else:
-        predictions.append(closest_seq[-1])
-        y_true.append(i[-1])                        
-    #produce the categorized dataset: catdata
+        predictions.append(closest_seq[-1])  
+        dists.append(min_dist)  
+        
+    threshold_vec = np.zeros(len(dists))
+    dist_data = np.concatenate((np.array([predictions]).T, np.array([dists]).T, np.array([threshold_vec]).T), axis = 1)    
+    _class = 1    
+    while(_class < 7):
+        dist_vec = []
+        for i in dist_data: 
+            if(i[0]==_class):
+                dist_vec.append(i[1])
+        # Take only the best 10 percent of the assigned curves
+        sort_dist_vec = np.sort(dist_vec)
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.1)-1)]
+        for j in dist_data:
+            if(j[0]==_class):
+                j[-1] = _threshold     
+        _class += 1
+        if(_class == 3 or _class == 5):
+            _class +=1
+     # Check if distance is higher than the particular threshold, assgin to residue class
+    for i in dist_data:
+        if(i[1]>i[2]):
+            i[0] = 5.0
+    cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    # Accuracy
-    print y_true, predictions
-    return accuracy_score(y_true,predictions)
-#    cat_data = np.concatenate((np.array(test), np.array([predictions]).T), axis = 1)  
-#    df = pd.DataFrame(cat_data)
-#    df.to_csv("Data/catdatasetAFB24.csv",  index=False)     
-#    return cat_data
+    # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/catdataset_AFBDTWDynThresholds.csv",  index=False)     
+    return cat_data
 
     
 '''
@@ -149,10 +160,9 @@ def AFB_Distance(train,test,w):
                 if dist<min_dist:
                     min_dist=dist     
         dists.append(min_dist)
-    dist_data = np.concatenate((np.array(test), np.array([dists]).T), axis = 1)  
+    dist_data = np.concatenate((np.array(test), np.array([dists]).T), axis = 1) 
     return dist_data
-    
-    
+       
 
 '''
 Method to compute weights depending on the in-class range of the particular 
@@ -178,26 +188,32 @@ def weighting_Algo(trainset):
         num_same_classes=[]        
         num_diff_classes = []        
         while(class_<7):
-            num_same = 0
-            num_diff = 0
             for S_x in dists:
-                if(S_x[-2]==class_):
-                    num_same +=1
-                    class_dists.append(S_x[-1])
-            max_dist =max(class_dists)
-            num_same_classes.append(num_same) 
-            for S_x in dists:
-                if(S_x[-2]!=class_ and S_x[-1]<=max_dist):
-                    num_diff+=1
-            num_diff_classes.append(num_diff)            
+                num_same = 0
+                num_diff = 0
+                current_dist = S_x[-1]
+                print "currentdist:", current_dist
+                for i in dists:
+                    if(i[-2]==class_):
+                        class_dists.append(i[-1])
+                max_dist =np.max(class_dists)
+                print "maximum:", max_dist
+                for j in dists:
+                    if(current_dist<j[-1]<max_dist and j[-2]==class_):
+                        num_same +=1
+                    elif(current_dist<j[-1]<max_dist and j[-2]!=class_):
+                        num_diff +=1
+                num_same_classes.append(num_same) 
+                num_diff_classes.append(num_diff) 
             class_ +=1
             if(class_==3 or class_==5):
                 class_+=1
-        print num_same_classes,num_diff_classes
+        print num_same_classes, num_diff_classes
         w_i = sum(np.array(num_same_classes) - np.array(num_diff_classes))
         print w_i
         w.append(w_i)      
-    return normalize(w[0],w[1])
+    return w[0],w[1]
+     
 
 '''
 Method to normalize the weights w1 and w2 as it is introduced in [Xie, Y.,
@@ -223,15 +239,8 @@ def normalize(w1,w2):
 
 
 
-#realdata = np.array(skipmissingdata(realdata))
-#print knn_AdaptiveFeaturebased(trainset,realdata, 50)
-
-#print weighting_Algo(trainset)
-#print normalize((-752),(-752)) vorher
-#print normalize(-742,-700) nachher
-#print normalize(-356,-330) # 200 samples
-#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
-print knn_AdaptiveFeaturebased(trainset,testset, 50)
+realdata = np.array(skipmissingdata(realdata))
+print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 
 
 #==============================================================================
@@ -248,3 +257,48 @@ plt.show()
 
 
 
+# Old version of weighting Algo
+#def weight_Algo(trainset):
+#    w=[]
+#    global w_i
+#    global w_j
+#    for i in range(0,2):
+#        if(i==0):
+#            w_i=1
+#            w_j=0
+#        else:
+#            w_i=0
+#            w_j=1            
+#        dists = AFB_Distance(trainset,trainset,50)
+#        class_ = 1  
+#        class_dists=[]
+#        num_same_classes=[]        
+#        num_diff_classes = []        
+#        while(class_<7):
+#            num_same = 0
+#            num_diff = 0
+#            for S_x in dists:
+#                if(S_x[-2]==class_):
+#                    num_same +=1
+#                    class_dists.append(S_x[-1])
+#            max_dist =max(class_dists)
+#            num_same_classes.append(num_same) 
+#            for S_x in dists:
+#                if(S_x[-2]!=class_ and S_x[-1]<=max_dist):
+#                    num_diff+=1
+#            num_diff_classes.append(num_diff)            
+#            class_ +=1
+#            if(class_==3 or class_==5):
+#                class_+=1
+#        print num_same_classes,num_diff_classes
+#        w_i = sum(np.array(num_same_classes) - np.array(num_diff_classes))
+#        print w_i
+#        w.append(w_i)      
+#    return normalize(w[0],w[1])    
+
+#print weighting_Algo(trainset)
+#print normalize((-752),(-752)) vorher
+#print normalize(-742,-700) nachher
+#print normalize(-356,-330) # 200 samples
+#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print knn_AdaptiveFeaturebased(trainset,testset, 50)

@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 
 # Prepare data
-X_train, labels_train = read_data(data_path = "./Data/train_set.csv")
-X_test, labels_test = read_data(data_path = "./Data/test_set.csv")
+X_train, labels_train = read_data(data_path = "./Data/train_setCNN.csv")
+X_test, labels_test = read_data(data_path = "./Data/test_setCNN.csv")
 _raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((9716,20))  
 for i in range(0,len(_raw)):
@@ -40,10 +40,10 @@ y_vld = one_hot(lab_vld)
 y_test = one_hot(labels_test)
 
 # Hyperparameters
-batch_size = 100
+batch_size = 50
 seq_len = 20
 learning_rate = 0.0001
-epochs = 2200
+epochs = 100
 n_classes = 4
 n_channels = 20
 
@@ -67,9 +67,14 @@ with graph.as_default():
     conv2 = tf.layers.conv1d(inputs=max_pool_1, filters=4, kernel_size=2,strides=1, padding='same', activation = tf.nn.relu)    
     max_pool_2 = tf.layers.max_pooling1d(inputs=conv2, pool_size=2, strides=2, padding='same')
     
+#    #(batch,5,4) --> (batch,2.5,8)
+#    conv3 = tf.layers.conv1d(inputs=max_pool_2, filters=8, kernel_size=2,strides=1, padding='same', activation = tf.nn.relu)    
+#    max_pool_3 = tf.layers.max_pooling1d(inputs=conv3, pool_size=2, strides=2, padding='same')
+#    
+    
 # Flatten and pass to the classifier
 with graph.as_default():
-    flat = tf.reshape(max_pool_2, (-1,5*4))
+    flat = tf.reshape(max_pool_2, (-1,5*80))
     flat = tf.nn.dropout(flat, keep_prob=keep_prob_)
     # Predictions
     logits = tf.layers.dense(flat, n_classes)
@@ -128,24 +133,24 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat19.ckpt")
-    
-# Plot training and test loss
-t = np.arange(iteration-1)
-plt.figure(figsize = (6,6))
-plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
-plt.xlabel("iteration")
-plt.ylabel("Loss")
-plt.legend(['train','validation'], loc='upper right')
-plt.show()
-
-# PLot Accuracy 
-plt.figure(figsize = (6,6))  
-plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
-plt.xlabel("iteration")
-plt.ylabel("Accuracy")
-plt.legend(['train','validation'], loc='upper right')
-plt.show()
+    saver.save(sess, "checkpoints-cnn/dat21.ckpt")
+#    
+## Plot training and test loss
+#t = np.arange(iteration-1)
+#plt.figure(figsize = (6,6))
+#plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
+#plt.xlabel("iteration")
+#plt.ylabel("Loss")
+#plt.legend(['train','validation'], loc='upper right')
+#plt.show()
+#
+## PLot Accuracy 
+#plt.figure(figsize = (6,6))  
+#plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
+#plt.xlabel("iteration")
+#plt.ylabel("Accuracy")
+#plt.legend(['train','validation'], loc='upper right')
+#plt.show()
 
 # Evaluate on test set
 test_acc = []
@@ -190,13 +195,15 @@ with tf.Session(graph=graph) as sess:
     data[0][:] = cat_data[0][:]
     count = 0
     ind = 1
-    while(ind<len(cat_data)-2):         
+    while(ind<len(cat_data)-2):    
+            print ("done")
             if(data[count][-1]!=cat_data[ind][-1]):
                 if(cat_data[ind][-1]==cat_data[ind+1][-1]):
                     tmp_ind = ind
                     logs = []
                     while( ind<9715 and cat_data[ind][-1]==cat_data[ind+1][-1]):
                         logs =  np.append(logs, (_logfile[ind][int(_logfile[ind][-1])]) )
+                        ind +=1
                     maximum_loc = np.argmax(logs)
                     data[count+1][:] = cat_data[(tmp_ind + maximum_loc)][:]
                     count += 1
@@ -207,6 +214,7 @@ with tf.Session(graph=graph) as sess:
             else:
                 ind += 1
     # save final categorized data in file  
+    print (data)
     df = pd.DataFrame(data)
     df.to_csv("Data/categorized_dataCNN.csv", index=False)
     

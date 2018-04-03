@@ -15,7 +15,7 @@ import sys
 import matplotlib.pyplot as plt
 
 
-realdata = np.array(skipmissingdata(realdata))
+
 
 
 all_timeseries = np.zeros((9716,ts_length))
@@ -26,39 +26,44 @@ real_data = all_timeseries
 #df = pd.DataFrame(real_data)
 #df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
 
-c_means=np.zeros((4,21))
+c_means=np.zeros((4,20))
 
 for i in range(0,20):
-    c_means[0][i] = np.mean(trainset.T[i][0:100])
-    c_means[1][i] = np.mean(trainset.T[i][100:200])
-    c_means[2][i] = np.mean(trainset.T[i][200:300])
-    c_means[3][i] = np.mean(trainset.T[i][300:400])
+    c_means[0][i] = np.mean(trainset.T[i][0:200])
+    c_means[1][i] = np.mean(trainset.T[i][200:400])
+    c_means[2][i] = np.mean(trainset.T[i][500:600])
+    c_means[3][i] = np.mean(trainset.T[i][600:800])
 
-c_means[0][-1] = 1.0 
-c_means[1][-1] = 2.0  
-c_means[2][-1] = 4.0  
-c_means[3][-1] = 6.0    
-df = pd.DataFrame(c_means)
-df.to_csv("Classifier/generalizedSamples/generalized_Curves.csv",  index=False)  
+# c_means[0]
+#c_means[0][-1] = 1.0 
+#c_means[1][-1] = 2.0  
+#c_means[2][-1] = 4.0  
+#c_means[3][-1] = 6.0    
+#df = pd.DataFrame(c_means)
+#df.to_csv("Classifier/generalizedSamples/generalized_Curves.csv",  index=False)  
    
-tmpdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)
-for i in tmpdata:
-     plt.plot(i[-1],np.amax(i[:-1]), '*')
-
-reload(sys)  
-sys.setdefaultencoding('utf8')
-plt.axis([-1, 4, -10, 30])
-plt.ylabel('activationValue')
-plt.xlabel('classes')
-plt.show()
-
-#plt.plot(time_steps, c_means[0],label = "normal progression") 
+#tmpdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
+#                          delimiter = ",", dtype = None, skip_header = 1)
+#for i in tmpdata:
+#     plt.plot(i[-1],np.amax(i[:-1]), '*')
+#
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
+#plt.axis([-1, 4, -10, 30])
+#plt.ylabel('activationValue')
+#plt.xlabel('classes')
+#plt.show()
+#for i in trainset[600:800]:
+#    print i[-1]
+#    plt.plot(time_steps,i[:-1])
+       
+#print trainset[0][:-1]
+#plt.plot(time_steps,trainset[0:100][:-1],label = "normal progression") 
 #plt.plot(time_steps, c_means[1],label = "bolus to big")  
 #plt.plot(time_steps, c_means[2],label = "bolus to small")  
 #plt.plot(time_steps, c_means[3],label = "correction of the bolus") 
-#
-#
+
+
 #plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 #plt.legend(loc=1)
 #plt.axis([0, ts_length-1, 10, 400])

@@ -18,10 +18,11 @@ def read_data(data_path):
     n_class = 4
     n_steps = 20
     n_channels= 1
-    labels = []
-    data = np.zeros((800,20))    
+    labels = []      
     # Read dataset
     samples = np.genfromtxt(data_path, delimiter = ",", skip_header = 1)
+    print (len(samples))
+    data = np.zeros((len(samples),20)) 
     # Read labels
     for i in range(0,len(samples)):
         labels.append(samples[i][20])
