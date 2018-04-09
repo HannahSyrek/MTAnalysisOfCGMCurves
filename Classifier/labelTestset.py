@@ -16,23 +16,45 @@ import matplotlib.pyplot as plt
 
 
 
+print len(realdata)
+r= np.array(realdata)
+r.resize((364,20))
+
+df = pd.DataFrame(r)
+df.to_csv("Classifier/Data/real_ModRaw.csv",  index=False) 
+
+#k =18
+#print r[k]
+#plt.plot(r[k])
+    
 
 
-all_timeseries = np.zeros((9716,ts_length))
-for i in range(0,len(realdata)-(ts_length-1)):
-    all_timeseries[i][:] = realdata[i:ts_length+i]
-real_data = all_timeseries
-  
-#df = pd.DataFrame(real_data)
-#df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
+#_timeserie = np.zeros((len(realdata)-(ts_length-1),ts_length))
+##save all time series with an overlap of 95 % in a new matrix 
+#for i in range(0,len(realdata)-(ts_length-1)):
+#    _timeserie[i][:] = realdata[i:ts_length+i]
+#real_overlap = _timeserie 
+#df = pd.DataFrame(real_overlap)
+#df.to_csv("Classifier/Data/real_ModRaw_overlap.csv",  index=False)   
+#print real_overlap 
 
-c_means=np.zeros((4,20))
 
-for i in range(0,20):
-    c_means[0][i] = np.mean(trainset.T[i][0:200])
-    c_means[1][i] = np.mean(trainset.T[i][200:400])
-    c_means[2][i] = np.mean(trainset.T[i][500:600])
-    c_means[3][i] = np.mean(trainset.T[i][600:800])
+
+#all_timeseries = np.zeros((9716,ts_length))
+#for i in range(0,len(realdata)-(ts_length-1)):
+#    all_timeseries[i][:] = realdata[i:ts_length+i]
+#real_data = all_timeseries
+#  
+##df = pd.DataFrame(real_data)
+##df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
+#
+#c_means=np.zeros((4,20))
+#
+#for i in range(0,20):
+#    c_means[0][i] = np.mean(trainset.T[i][0:200])
+#    c_means[1][i] = np.mean(trainset.T[i][200:400])
+#    c_means[2][i] = np.mean(trainset.T[i][500:600])
+#    c_means[3][i] = np.mean(trainset.T[i][600:800])
 
 # c_means[0]
 #c_means[0][-1] = 1.0 
@@ -53,9 +75,15 @@ for i in range(0,20):
 #plt.ylabel('activationValue')
 #plt.xlabel('classes')
 #plt.show()
-#for i in trainset[600:800]:
+   
+#class5_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/class5_set.csv",
+#                          delimiter = ",", dtype = None, skip_header = 1)
+#for i in class5_data[0:50]:
 #    print i[-1]
 #    plt.plot(time_steps,i[:-1])
+   
+
+
        
 #print trainset[0][:-1]
 #plt.plot(time_steps,trainset[0:100][:-1],label = "normal progression") 
@@ -65,11 +93,11 @@ for i in range(0,20):
 
 
 #plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-#plt.legend(loc=1)
-#plt.axis([0, ts_length-1, 10, 400])
-#plt.ylabel('blood glucose content (mg/dL)')
-#plt.xlabel('timesteps')
-#plt.show()
+plt.legend(loc=1)
+plt.axis([0, ts_length-1, 10, 400])
+plt.ylabel('blood glucose content (mg/dL)')
+plt.xlabel('timesteps')
+plt.show()
 
 #k=154
 #for i in range(k,k+1):

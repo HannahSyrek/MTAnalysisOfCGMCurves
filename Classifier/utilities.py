@@ -33,19 +33,19 @@ trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator
 train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/generalizedSamples/generalized_Curves.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
 testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)
-realdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
-                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
-                         usecols = (3))  
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWDynThresholds.csv",
+                         delimiter = ",", dtype = None, skip_header = 1)  
+tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
-cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataCNN.csv",
+cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataCNNnew.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
 logdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
 _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [1,3]) 
-                         
+
+
+
+                       
 
 '''
 Method to modify the raw data, skip all cgm values between 0 and 6 o'clock.
@@ -73,7 +73,7 @@ def modify_rawData(data):
     return raw_data
        
 
-#print modify_rawData(_data)
+realdata = modify_rawData(_data)
 
                           
 '''
@@ -94,7 +94,7 @@ def decode_classes(data):
     return data
     
 # For the CNN data
-#_data = decode_classes(cnndata) 
+cnn_data = decode_classes(cnndata) 
    
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
@@ -123,7 +123,7 @@ def skipRepetitions(data):
             if(data[ind][-3] == data[ind+1][-3]):
                 tmp_ind = ind
                 dists = []
-                while(ind<9715 and data[ind][-3]==data[ind+1][-3]):
+                while(ind<7279 and data[ind][-3]==data[ind+1][-3]):
                     dists = np.append(dists, data[ind][-2])
                     ind +=1
                 min_loc = np.argmin(dists)
@@ -136,7 +136,7 @@ def skipRepetitions(data):
         else:
             ind +=1        
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdataWithoutRepetitionsDDTWTestTreshes.csv", index=False)       
+    df.to_csv("Data/catdataWithoutRepetitionsFBDTWModRaws.csv", index=False)       
     return cat_data
 
  
@@ -144,7 +144,7 @@ def skipRepetitions(data):
 Method to plot all assigned curves of the particular category.
 '''        
 def plotCategories(category): 
-    data = skipRepetitions(tempdata)
+    data = cnn_data#skipRepetitions(tempdata)
     count = 0
     for i in data:
         if(i[-1]==category):
@@ -152,7 +152,7 @@ def plotCategories(category):
             count += 1
     return count        
 
-print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 '''
 Method to calculate the derivation of a given point, as it is used in
@@ -220,7 +220,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
-plt.axis([0, ts_length-1, 10, 400])
+plt.axis([0, ts_length-1, 10, 500])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()

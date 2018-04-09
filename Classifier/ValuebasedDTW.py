@@ -70,7 +70,7 @@ def knnDynamic(train,test,w):
         closest_seq=[]
         print ind
         for j in train:
-            #For the derivation of the datapoints, substitute the following two lines with:
+            # For the derivation of the datapoints, substitute the following two lines with:
             if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
                 dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
             #if LB_Keogh(i[:],j[:-1],10)<min_dist:
@@ -78,9 +78,10 @@ def knnDynamic(train,test,w):
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-        #assign the best 10 % of the time series to the respective class
+        # Assign the best 10 % of the time series to the respective class
         predictions.append(closest_seq[-1])  
-        dists.append(min_dist)  
+        dists.append(min_dist) 
+        #y_true.append(i[-1])
         
     threshold_vec = np.zeros(len(dists))
     dist_data = np.concatenate((np.array([predictions]).T, np.array([dists]).T, np.array([threshold_vec]).T), axis = 1)    
@@ -92,26 +93,30 @@ def knnDynamic(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.1)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.09)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
         _class += 1
         if(_class == 3 or _class == 5):
             _class +=1
-     # Check if distance is bigger than particular threshold, in this case, assgin the residue class
+    # Check if distance is bigger than particular threshold, in this case, assgin the residue class
     for i in dist_data:
         if(i[1]>i[2]):
             i[0] = 5.0
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    # Accuracy: modify code with: y_true.append(i[-1]), return accuracy_score(y_true,predictions)           
+    # Accuracy: modify code with: return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdatasetDDTWDynThresholds.csv",  index=False)     
+    df.to_csv("Data/catdatasetDDTWModRawdata.csv",  index=False)     
     return cat_data
 
+
  
-realdata = np.array(skipmissingdata(realdata))
+#realdata = np.array(skipmissingdata(realdata))
+print np.array(realdata)
+realdata = np.array(realdata)
+print len(realdata)
 print knnDynamic(trainset,realdata, 50)
 
 

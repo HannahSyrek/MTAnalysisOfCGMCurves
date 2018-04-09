@@ -15,13 +15,13 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 
 # Prepare data
-X_train, labels_train = read_data(data_path = "./Data/train_setCNN.csv")
-X_test, labels_test = read_data(data_path = "./Data/test_setCNN.csv")
-_raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
-data = np.zeros((9716,20))  
+X_train, labels_train = read_data(data_path = "./Data/train_set.csv")
+X_test, labels_test = read_data(data_path = "./Data/test_set.csv")
+_raw = np.genfromtxt("./Data/real_ModRaw_overlap.csv", delimiter = ",", skip_header = 1)
+data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
     data[i][:] = _raw[i][:]
-X_raw = data.reshape((9716, 20, 1))     
+X_raw = data.reshape((len(_raw), 20, 1))     
 print (X_raw)
 
 # Normalize
@@ -43,7 +43,7 @@ y_test = one_hot(labels_test)
 batch_size = 50
 seq_len = 20
 learning_rate = 0.0001
-epochs = 100
+epochs = 1000
 n_classes = 4
 n_channels = 20
 
@@ -74,7 +74,7 @@ with graph.as_default():
     
 # Flatten and pass to the classifier
 with graph.as_default():
-    flat = tf.reshape(max_pool_2, (-1,5*80))
+    flat = tf.reshape(max_pool_2, (-1,5*4))
     flat = tf.nn.dropout(flat, keep_prob=keep_prob_)
     # Predictions
     logits = tf.layers.dense(flat, n_classes)
@@ -133,7 +133,7 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat21.ckpt")
+    saver.save(sess, "checkpoints-cnn/dat24.ckpt")
 #    
 ## Plot training and test loss
 #t = np.arange(iteration-1)
@@ -176,7 +176,7 @@ with tf.Session(graph=graph) as sess:
             if(i[-1]==_class):
                 all_maxima.append(np.amax(i[:-1]))
         maxima_sorted = np.sort(all_maxima)
-        _threshold = maxima_sorted[int(len(all_maxima)*0.9)]
+        _threshold = maxima_sorted[int(len(all_maxima)*0.95)]
         print (_threshold)
         for jnd, j in enumerate(_logs):
             if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
@@ -201,7 +201,7 @@ with tf.Session(graph=graph) as sess:
                 if(cat_data[ind][-1]==cat_data[ind+1][-1]):
                     tmp_ind = ind
                     logs = []
-                    while( ind<9715 and cat_data[ind][-1]==cat_data[ind+1][-1]):
+                    while( ind<(len(cat_data)-1) and cat_data[ind][-1]==cat_data[ind+1][-1]):
                         logs =  np.append(logs, (_logfile[ind][int(_logfile[ind][-1])]) )
                         ind +=1
                     maximum_loc = np.argmax(logs)
@@ -216,7 +216,7 @@ with tf.Session(graph=graph) as sess:
     # save final categorized data in file  
     print (data)
     df = pd.DataFrame(data)
-    df.to_csv("Data/categorized_dataCNN.csv", index=False)
+    df.to_csv("Data/categorized_dataCNNnew.csv", index=False)
     
 
 

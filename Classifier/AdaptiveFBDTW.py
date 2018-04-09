@@ -89,13 +89,14 @@ def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
     #y_true = []
-    weights = normalize(-121565, -106893)
+    #weights = weighting_Algo(train)
+    weights =normalize(-121565, -106893)
     print weights
     global w_i 
     w_i= weights[0]
     global w_j
     w_j = weights[1]
-    dyn_timeserie = np.zeros((9716,ts_length))
+    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
     #save all possible time series in a new matrix to iterate over all 
     for i in range(0,len(test)-(ts_length-1)):
         dyn_timeserie[i][:] = test[i:ts_length+i]
@@ -140,10 +141,10 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdataset_AFBDTWDynThresholds.csv",  index=False)     
+    df.to_csv("Data/catdataset_AFBDTWModRawdata.csv",  index=False)     
     return cat_data
-
     
+  
 '''
 Method to calculate the distance between two time series, componentwise and 
 depending on local and global feature of the particular time serie that were 
@@ -239,7 +240,8 @@ def normalize(w1,w2):
 
 
 
-realdata = np.array(skipmissingdata(realdata))
+#realdata = np.array(skipmissingdata(realdata))
+realdata = np.array(realdata)
 print knn_AdaptiveFeaturebased(trainset,realdata, 50)
 
 

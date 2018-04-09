@@ -24,31 +24,29 @@ class Generator:
     C1 = Curve(1,175,85,90,23,180,70)  
     C2 = Curve(2,200,30,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
-    C4 = Curve(4,230,200,90,23,180,70)      
-    #C5 = Curve(5,200,40,100,250,180,70)      
+    C4 = Curve(4,230,200,90,23,180,70)  
+    # Residue class    
+    C51 = Curve(5,110,90,100,23,180,70)  
+    C52 = Curve(5,300,10,100,23,180,70)
+    C53 = Curve(5,105,10,100,23,180,70)  
+    C54 = Curve(5,350,100,20,23,180,70) 
+    
     C6 = Curve(6,230,80,200,23,180,70)
-    global categories
+    global categories2
     categories = [C1,C2,C4,C6]
+    categories2 = [C51,C52,C53,C54]
 
-#    for i in range(0,20):
-#            c = C1.generate()
-#            print c
-#            print savgol_filter(c, 5, 3)
-#       
-#    c = C1.generate()
-#    print c
-#    print savgol_filter(c, 5, 3)
     '''
     Method to build the datamatrix.
     There are 50 curve samples per categorie, every curve exists out of 60 values.
     '''  
 
     def builddataset():
-        dataset = np.zeros((40,21))
+        dataset = np.zeros((200,21))
         counter = 0
-        for curve in categories:            
-            if(counter < 40):
-                for i in range(counter, counter +10):
+        for curve in categories2:            
+            if(counter < 200):
+                for i in range(counter, counter +50):
                     #generate the specific curve
                     c = curve.generate()
                     #smooth curve with savitzky_golay filter
@@ -56,7 +54,7 @@ class Generator:
                     chat = np.append(chat, curve.Categorie)
                     for j in range(0,21):
                         dataset[i][j] = chat[j]
-                counter = counter + 10     
+                counter = counter + 50    
         return dataset
                        
         
@@ -66,7 +64,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("test_setAFB.csv",  index=False)
+        df.to_csv("class5test_set.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 
