@@ -65,15 +65,24 @@ def write_patterns(data, pats):
                 # save class in data file
                 # temp_ind = ind
                 for temp in range(jnd, jnd+20):
-                    #print temp
-                    data[temp][2] = i[-1] 
+                    if(i[-1]==1):
+                        data[temp][2] = i[-1] 
+                    elif(i[-1]==2):
+                        data[temp][3] = i[-1]
+                    elif(i[-1]==4):
+                        data[temp][4] = i[-1] 
+                    elif(i[-1]==5):
+                        data[temp][5] = i[-1] 
+                    elif(i[-1]==6):
+                        data[temp][6] = i[-1] 
+                        
 
     # Return cgm values with bolus and associated class
     return data
 
 
 data = skipmissing_data(alldata) 
-pattern_data = np.concatenate( (data,np.zeros((len(data),1)) ), axis = 1) 
+pattern_data = np.concatenate( (data,np.zeros((len(data),5)) ), axis = 1) 
 class_data =  write_patterns(pattern_data,patterns)
 
 df = pd.DataFrame(class_data)
@@ -81,7 +90,11 @@ df.to_csv("Data/bolus_class_dataset.csv", index=False)
 data_transposed = class_data.T 
 plt.plot(data_transposed[0])
 plt.plot(data_transposed[1]*data_transposed[0], 'r*')
-plt.plot(data_transposed[2]*10, 'g-')
+plt.plot(data_transposed[2]*200, label='class 1')
+plt.plot(data_transposed[3]*100, label='class 2')
+plt.plot(data_transposed[4]*50, label='class 4')
+#plt.plot(data_transposed[5]*20, label='class 5')
+plt.plot(data_transposed[6]*33, label='class 6')
 
 
 # Initilize some parameters
@@ -101,7 +114,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
-plt.axis([0, len(data)/25, 1, 500])
+plt.axis([0, len(data)/40, 1, 500])
 plt.ylabel('blood glucose content (mg/dL) with associated bolud value')
 plt.xlabel('timesteps')
 plt.show()    
