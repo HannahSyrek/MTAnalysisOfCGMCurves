@@ -36,7 +36,7 @@ testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/
                          delimiter = ",", dtype = None, skip_header = 1)  
 tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
-cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataCNNnew.csv",
+cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_only_class1.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
 logdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
@@ -84,7 +84,7 @@ def decode_classes(data):
         if(i[-1]==0 and i[0]!=0):
             i[-1] = 1
         elif(i[-1]==1):
-            i[-1] = 2
+            i[-1] = 5
         elif(i[-1]==2):
             i[-1] = 4
         elif(i[-1]==3):
@@ -152,7 +152,7 @@ def plotCategories(category):
             count += 1
     return count        
 
-#print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+print [plotCategories(1)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 '''
 Method to calculate the derivation of a given point, as it is used in

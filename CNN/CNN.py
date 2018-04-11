@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 
 # Prepare data
-X_train, labels_train = read_data(data_path = "./Data/train_set.csv")
-X_test, labels_test = read_data(data_path = "./Data/test_set.csv")
-_raw = np.genfromtxt("./Data/real_ModRaw_overlap.csv", delimiter = ",", skip_header = 1)
+X_train, labels_train = read_data(data_path = "./CNN_class1/class1_train_set.csv")
+X_test, labels_test = read_data(data_path = "./CNN_class1/class1_test_set.csv")
+_raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
     data[i][:] = _raw[i][:]
@@ -44,7 +44,7 @@ batch_size = 50
 seq_len = 20
 learning_rate = 0.0001
 epochs = 1000
-n_classes = 4
+n_classes = 2
 n_channels = 20
 
 # Construct the graph
@@ -133,7 +133,7 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat24.ckpt")
+    saver.save(sess, "checkpoints-cnn/dat25.ckpt")
 #    
 ## Plot training and test loss
 #t = np.arange(iteration-1)
@@ -164,30 +164,30 @@ with tf.Session(graph=graph) as sess:
     df = pd.DataFrame(log_data)
     df.to_csv("Data/logdata.csv", index=False)
     
-    # Implement thresholds to assign samples to the residue class
-    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
-    new_preds = []
-    count=0
-    for _class in range(0,4):
-        print (count)
-        _threshold = 0
-        all_maxima = []
-        for i in _logs:
-            if(i[-1]==_class):
-                all_maxima.append(np.amax(i[:-1]))
-        maxima_sorted = np.sort(all_maxima)
-        _threshold = maxima_sorted[int(len(all_maxima)*0.95)]
-        print (_threshold)
-        for jnd, j in enumerate(_logs):
-            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
-                _logs[jnd][-1] = 4
-        count +=1        
-    for i in _logs:
-        new_preds.append(i[-1])       
-      
-    cat_data = np.concatenate((np.array(_raw), np.array([new_preds]).T), axis = 1) 
-    df = pd.DataFrame(cat_data)
-    df.to_csv("Data/logdata_transformed.csv", index=False)
+#    # Implement thresholds to assign samples to the residue class
+#    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
+#    new_preds = []
+#    count=0
+#    for _class in range(0,4):
+#        print (count)
+#        _threshold = 0
+#        all_maxima = []
+#        for i in _logs:
+#            if(i[-1]==_class):
+#                all_maxima.append(np.amax(i[:-1]))
+#        maxima_sorted = np.sort(all_maxima)
+#        _threshold = maxima_sorted[int(len(all_maxima)*0.95)]
+#        print (_threshold)
+#        for jnd, j in enumerate(_logs):
+#            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
+#                _logs[jnd][-1] = 4
+#        count +=1        
+#    for i in _logs:
+#        new_preds.append(i[-1])       
+#      
+    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
+#    df = pd.DataFrame(cat_data)
+#    df.to_csv("Data/logdata_transformed.csv", index=False)
     
     # skip repetitions and choose the best curve of the particular classes 
     _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
@@ -216,7 +216,7 @@ with tf.Session(graph=graph) as sess:
     # save final categorized data in file  
     print (data)
     df = pd.DataFrame(data)
-    df.to_csv("Data/categorized_dataCNNnew.csv", index=False)
+    df.to_csv("CNN_class1/categorized_only_class1.csv", index=False)
     
 
 

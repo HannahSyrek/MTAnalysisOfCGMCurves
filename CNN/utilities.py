@@ -55,7 +55,7 @@ def change_label(lab):
 
 '''
 '''
-def one_hot(labels, n_class=4):
+def one_hot(labels, n_class=2):
     expansion = np.eye(n_class)
     print (expansion)
     y = expansion[:,labels-1].T
