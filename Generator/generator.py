@@ -21,17 +21,17 @@ class Generator:
     
     #instances of the imported class to initialize the six different patterns
     #np.random.randint(low=200, high=260)
-    C1 = Curve(1,175,85,90,23,180,70)  
+    C1 = Curve(1,180,70,80,23,180,70)  
     C2 = Curve(0,200,30,100,23,180,70)
     #C3 = Curve(3,280,105,100,250,180,70)    
-    C4 = Curve(0,230,200,90,23,180,70)  
+    C4 = Curve(4,230,200,90,23,180,70)  
     # Residue class    
 #    C51 = Curve(5,110,90,100,23,180,70)  
 #    C52 = Curve(5,300,10,100,23,180,70)
 #    C53 = Curve(5,105,10,100,23,180,70)  
 #    C54 = Curve(5,350,100,20,23,180,70) 
     
-    C6 = Curve(0,230,80,200,23,180,70)
+    C6 = Curve(6,260,80,250,23,180,70)
     global categories
     categories = [C1,C4,C6]
     #categories2 = [C51,C52,C53,C54]
@@ -64,7 +64,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("class1_train_set.csv",  index=False)
+        df.to_csv("test_set_3classes.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 

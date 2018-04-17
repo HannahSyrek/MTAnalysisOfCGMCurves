@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 
 # Prepare data
-X_train, labels_train = read_data(data_path = "./CNN_class1/class1_train_set.csv")
-X_test, labels_test = read_data(data_path = "./CNN_class1/class1_test_set.csv")
+X_train, labels_train = read_data(data_path = "./all_classes/train_set_3classes.csv")
+X_test, labels_test = read_data(data_path = "./all_classes/test_set_3classes.csv")
 _raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
@@ -44,7 +44,7 @@ batch_size = 50
 seq_len = 20
 learning_rate = 0.0001
 epochs = 1000
-n_classes = 2
+n_classes = 3
 n_channels = 20
 
 # Construct the graph
@@ -66,11 +66,7 @@ with graph.as_default():
     #(batch,10,2) --> (batch,5,4)
     conv2 = tf.layers.conv1d(inputs=max_pool_1, filters=4, kernel_size=2,strides=1, padding='same', activation = tf.nn.relu)    
     max_pool_2 = tf.layers.max_pooling1d(inputs=conv2, pool_size=2, strides=2, padding='same')
-    
-#    #(batch,5,4) --> (batch,2.5,8)
-#    conv3 = tf.layers.conv1d(inputs=max_pool_2, filters=8, kernel_size=2,strides=1, padding='same', activation = tf.nn.relu)    
-#    max_pool_3 = tf.layers.max_pooling1d(inputs=conv3, pool_size=2, strides=2, padding='same')
-#    
+       
     
 # Flatten and pass to the classifier
 with graph.as_default():
@@ -87,9 +83,7 @@ with graph.as_default():
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
     predictions = tf.argmax(logits,1)
     
-# Train the network
-#if(os.path.exist('checkpoint-cnn')== False):
-   #!(mkdir checkpoints-cnn)
+########################### Train the network #################################
     
 validation_acc = []
 validation_loss = []
@@ -164,30 +158,30 @@ with tf.Session(graph=graph) as sess:
     df = pd.DataFrame(log_data)
     df.to_csv("Data/logdata.csv", index=False)
     
-#    # Implement thresholds to assign samples to the residue class
-#    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
-#    new_preds = []
-#    count=0
-#    for _class in range(0,4):
-#        print (count)
-#        _threshold = 0
-#        all_maxima = []
-#        for i in _logs:
-#            if(i[-1]==_class):
-#                all_maxima.append(np.amax(i[:-1]))
-#        maxima_sorted = np.sort(all_maxima)
-#        _threshold = maxima_sorted[int(len(all_maxima)*0.95)]
-#        print (_threshold)
-#        for jnd, j in enumerate(_logs):
-#            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
-#                _logs[jnd][-1] = 4
-#        count +=1        
-#    for i in _logs:
-#        new_preds.append(i[-1])       
-#      
-    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
-#    df = pd.DataFrame(cat_data)
-#    df.to_csv("Data/logdata_transformed.csv", index=False)
+    # Implement thresholds to assign samples to the residue class
+    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
+    new_preds = []
+    count=0
+    for _class in range(0,3):
+        print (count)
+        _threshold = 0
+        all_maxima = []
+        for i in _logs:
+            if(i[-1]==_class):
+                all_maxima.append(np.amax(i[:-1]))
+        maxima_sorted = np.sort(all_maxima)
+        _threshold = maxima_sorted[int(len(all_maxima)*0.2)]
+        print (_threshold)
+        for jnd, j in enumerate(_logs):
+            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
+                _logs[jnd][-1] = 4
+        count +=1        
+    for i in _logs:
+        new_preds.append(i[-1])       
+      
+    cat_data = np.concatenate((np.array(_raw), np.array([new_preds]).T), axis = 1) 
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/logdata_transformed.csv", index=False)
     
     # skip repetitions and choose the best curve of the particular classes 
     _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
@@ -196,7 +190,7 @@ with tf.Session(graph=graph) as sess:
     count = 0
     ind = 1
     while(ind<len(cat_data)-2):    
-            print ("done")
+            #print ("done")
             if(data[count][-1]!=cat_data[ind][-1]):
                 if(cat_data[ind][-1]==cat_data[ind+1][-1]):
                     tmp_ind = ind
@@ -216,7 +210,7 @@ with tf.Session(graph=graph) as sess:
     # save final categorized data in file  
     print (data)
     df = pd.DataFrame(data)
-    df.to_csv("CNN_class1/categorized_only_class1.csv", index=False)
+    df.to_csv("all_classes/categorized_all_3classes.csv", index=False)
     
 
 

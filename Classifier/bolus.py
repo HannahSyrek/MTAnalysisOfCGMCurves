@@ -16,15 +16,20 @@ from utilities import *
 cgmdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))
+cgm_data = skipmissingdata(cgmdata)
 bolusdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = 0,
                          usecols = (9)) 
-patterns = decode_classes(np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_dataCNNnew.csv",
+patterns = decode_classes(np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_all_3classes.csv",
                           delimiter = ",", dtype = None, skip_header = 1)) 
+raw_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
+                         delimiter = ",", dtype = None, skip_header = 1)
 alldata = np.vstack((cgmdata,bolusdata)).T 
 
 
-print len(patterns[0])
+#cgm_data = skipmissingdata(cgmdata)
+
+
 
                     
 '''
@@ -54,68 +59,109 @@ def skipmissing_data(data):
 
 
 '''
-Method to write recognized patterns in raw data, to plot them with bolus values and evaluate class quality.
+Method to write recognized patterns in raw data, to evaluate class quality.
 ''' 
 def write_patterns(data, pats):
     #Todo: for mod data without night
+    class_vector = ["" for x in range(len(data))]
     for ind, i in enumerate(pats):
         for jnd, j in enumerate(data):
-            if(jnd<(len(data)-1) and data[jnd][0]==i[0] and data[jnd+1][0]==i[1] and data[jnd+2][0]==i[2]):
-                # than: the  jth pattern is the following 20 values
-                # save class in data file
-                # temp_ind = ind
-                for temp in range(jnd, jnd+20):
-                    if(i[-1]==1):
-                        data[temp][2] = i[-1] 
-                    elif(i[-1]==2):
-                        data[temp][3] = i[-1]
-                    elif(i[-1]==4):
-                        data[temp][4] = i[-1] 
-                    elif(i[-1]==5):
-                        data[temp][5] = i[-1] 
-                    elif(i[-1]==6):
-                        data[temp][6] = i[-1] 
-                        
+            if(jnd<(len(data)-1) and data[jnd]==i[0] and data[jnd+1]==i[1] and data[jnd+2]==i[2]):
+                # than: the  j-th pattern is the following time serie of length 20
+                first_value = jnd
+                if(i[-1]==1):
+                    class_vector[first_value] = 'Class 1'
+                elif(i[-1]==4):
+                    class_vector[first_value]  = 'Class 4'
+                elif(i[-1]==5):
+                    class_vector[first_value]  = 'Class 5'
+                elif(i[-1]==6):
+                    class_vector[first_value]  = 'Class 6'
 
-    # Return cgm values with bolus and associated class
-    return data
+    # Return cgm values with associated class
+    categorized_data = np.c_[np.asarray(data), class_vector] 
+    _raw = np.asarray(pd.DataFrame(raw_data))
+    df = pd.DataFrame(_raw)
+    df.to_csv("Data/temporarystuff.csv", index=False)
+    print _raw
+
+    print categorized_data  
+    #print categorized_data.T[0][0]
+    #print categorized_data.T[1]
+    count = 0
+    print _raw[0][3]
+    print categorized_data.T[0][0]
+    for ind, i in enumerate(_raw):
+        #print i[3]
+        #print i.T[3][0]
+        #print i[3],categorized_data.T[count][0]
+        #rint categorized_data.T[count][0]
+        #print count
+        if (i[3]==categorized_data.T[count][0]):
+            i[23] = categorized_data.T[count][1]
+           #print i[23]
+            count += 1
+        else:
+            ind += 1
+            
+    return _raw
+
+#np.asarray(raw_data)
+#d = np.asmatrix(pd.DataFrame(raw_data))
+#print pd.DataFrame(raw_data)
+#print d.T[3]
+
+#'''
+#Method to export recognized patterns in raw data.
+#'''
+#def exporter(cat_data, raw_data):
+#    d = np.asmatrix(pd.DataFrame(raw_data)).T
+#    # index = 3 -> cgm values, index = 23 -> class info
+#    #for 
+#
+#    
+#    return stuff
+    
 
 
-data = skipmissing_data(alldata) 
-pattern_data = np.concatenate( (data,np.zeros((len(data),5)) ), axis = 1) 
-class_data =  write_patterns(pattern_data,patterns)
+#data = skipmissing_data(alldata) 
+#pattern_data = np.concatenate( (data,np.zeros((len(data),5)) ), axis = 1) 
+class_data =  write_patterns(cgm_data,patterns)
+
 
 df = pd.DataFrame(class_data)
-df.to_csv("Data/bolus_class_dataset.csv", index=False)
-data_transposed = class_data.T 
-plt.plot(data_transposed[0])
-plt.plot(data_transposed[1]*data_transposed[0], 'r*')
-plt.plot(data_transposed[2]*200, label='class 1')
-plt.plot(data_transposed[3]*100, label='class 2')
-plt.plot(data_transposed[4]*50, label='class 4')
-#plt.plot(data_transposed[5]*20, label='class 5')
-plt.plot(data_transposed[6]*33, label='class 6')
+df.to_csv("Data/bolus_3_classes_new_new.csv", index=False)
+#data_transposed = class_data.T 
 
-
-# Initilize some parameters
-low_value = 70
-up_value = 180
-lower_bound = []
-upper_bound = []
-# Fill time step vector to plot the cgm curvesover time
-for i in range(0, len(data)):
-    lower_bound.append(low_value)
-    upper_bound.append(up_value)
-time_steps = np.asarray(range(0,len(data)))   
-#==============================================================================
-#plot the results to visualize the found patterns
-#==============================================================================
-reload(sys)  
-sys.setdefaultencoding('utf8')
-plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-plt.legend(loc=1)
-plt.axis([0, len(data)/40, 1, 500])
-plt.ylabel('blood glucose content (mg/dL) with associated bolud value')
-plt.xlabel('timesteps')
-plt.show()    
+##plt.plot(data_transposed[0])
+##plt.plot(data_transposed[1]*data_transposed[0], 'r*')
+##plt.plot(data_transposed[2]*200, label='class 1')
+##plt.plot(data_transposed[4]*50, label='class 4')
+##plt.plot(data_transposed[6]*33, label='class 6')
+#
+#
+#
+#  
+##==============================================================================
+##plot the results to visualize the found patterns
+##==============================================================================
+## Initilize some parameters
+#low_value = 70
+#up_value = 180
+#lower_bound = []
+#upper_bound = []
+## Fill time step vector to plot the cgm curvesover time
+#for i in range(0, len(data)):
+#    lower_bound.append(low_value)
+#    upper_bound.append(up_value)
+#time_steps = np.asarray(range(0,len(data))) 
+#
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
+#plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
+#plt.legend(loc=1)
+#plt.axis([0, len(data)/40, 1, 500])
+#plt.ylabel('blood glucose content (mg/dL) with associated bolus value')
+#plt.xlabel('timesteps')
+#plt.show()    
     

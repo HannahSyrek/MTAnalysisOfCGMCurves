@@ -48,14 +48,14 @@ def change_label(lab):
     new_lab = lab.astype(int)
     for i in range(0,len(new_lab)):
         if(new_lab[i]==4):
-            new_lab[i]=3
+            new_lab[i]=2
         elif(new_lab[i]==6):
-            new_lab[i]=4
+            new_lab[i]=3
     return new_lab
 
 '''
 '''
-def one_hot(labels, n_class=2):
+def one_hot(labels, n_class=3):
     expansion = np.eye(n_class)
     print (expansion)
     y = expansion[:,labels-1].T

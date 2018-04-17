@@ -28,7 +28,7 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 #read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set_3classes.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
 train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/generalizedSamples/generalized_Curves.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
@@ -36,7 +36,7 @@ testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/
                          delimiter = ",", dtype = None, skip_header = 1)  
 tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
-cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_only_class1.csv",
+cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_all_3classes.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
 logdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
                           delimiter = ",", dtype = None, skip_header = 1)
@@ -44,7 +44,7 @@ _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [1,3]) 
 
 
-
+print cnndata
                        
 
 '''
@@ -84,11 +84,11 @@ def decode_classes(data):
         if(i[-1]==0 and i[0]!=0):
             i[-1] = 1
         elif(i[-1]==1):
-            i[-1] = 5
-        elif(i[-1]==2):
             i[-1] = 4
-        elif(i[-1]==3):
+        elif(i[-1]==2):
             i[-1] = 6
+        #elif(i[-1]==3):
+            #i[-1] = 6
         elif(i[-1]==4):
             i[-1] = 5
     return data
@@ -152,7 +152,7 @@ def plotCategories(category):
             count += 1
     return count        
 
-print [plotCategories(1)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
 
 '''
 Method to calculate the derivation of a given point, as it is used in
