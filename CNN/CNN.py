@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 # Prepare data
 X_train, labels_train = read_data(data_path = "./all_classes/train_set_3classes.csv")
 X_test, labels_test = read_data(data_path = "./all_classes/test_set_3classes.csv")
-_raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
+_raw = np.genfromtxt("./all_classes/labeled_withNight.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
     data[i][:] = _raw[i][:]
@@ -127,7 +127,7 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat25.ckpt")
+    saver.save(sess, "checkpoints-cnn/dat42.ckpt")
 #    
 ## Plot training and test loss
 #t = np.arange(iteration-1)
@@ -170,7 +170,7 @@ with tf.Session(graph=graph) as sess:
             if(i[-1]==_class):
                 all_maxima.append(np.amax(i[:-1]))
         maxima_sorted = np.sort(all_maxima)
-        _threshold = maxima_sorted[int(len(all_maxima)*0.2)]
+        _threshold = maxima_sorted[int(len(all_maxima)*0.4)]
         print (_threshold)
         for jnd, j in enumerate(_logs):
             if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
@@ -181,36 +181,37 @@ with tf.Session(graph=graph) as sess:
       
     cat_data = np.concatenate((np.array(_raw), np.array([new_preds]).T), axis = 1) 
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/logdata_transformed.csv", index=False)
-    
-    # skip repetitions and choose the best curve of the particular classes 
-    _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
-    data = np.zeros((len(cat_data),21))
-    data[0][:] = cat_data[0][:]
-    count = 0
-    ind = 1
-    while(ind<len(cat_data)-2):    
-            #print ("done")
-            if(data[count][-1]!=cat_data[ind][-1]):
-                if(cat_data[ind][-1]==cat_data[ind+1][-1]):
-                    tmp_ind = ind
-                    logs = []
-                    while( ind<(len(cat_data)-1) and cat_data[ind][-1]==cat_data[ind+1][-1]):
-                        logs =  np.append(logs, (_logfile[ind][int(_logfile[ind][-1])]) )
-                        ind +=1
-                    maximum_loc = np.argmax(logs)
-                    data[count+1][:] = cat_data[(tmp_ind + maximum_loc)][:]
-                    count += 1
-                else: 
-                    data[count+1][:] = cat_data[ind][:]
-                    count += 1
-                    ind += 1
-            else:
-                ind += 1
-    # save final categorized data in file  
-    print (data)
-    df = pd.DataFrame(data)
-    df.to_csv("all_classes/categorized_all_3classes.csv", index=False)
+    df.to_csv("Data/CNN_labeled.csv", index=False)
+#    df.to_csv("Data/logdata_transformed.csv", index=False)
+#    
+#    # skip repetitions and choose the best curve of the particular classes 
+#    _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
+#    data = np.zeros((len(cat_data),21))
+#    data[0][:] = cat_data[0][:]
+#    count = 0
+#    ind = 1
+#    while(ind<len(cat_data)-2):    
+#            #print ("done")
+#            if(data[count][-1]!=cat_data[ind][-1]):
+#                if(cat_data[ind][-1]==cat_data[ind+1][-1]):
+#                    tmp_ind = ind
+#                    logs = []
+#                    while( ind<(len(cat_data)-1) and cat_data[ind][-1]==cat_data[ind+1][-1]):
+#                        logs =  np.append(logs, (_logfile[ind][int(_logfile[ind][-1])]) )
+#                        ind +=1
+#                    maximum_loc = np.argmax(logs)
+#                    data[count+1][:] = cat_data[(tmp_ind + maximum_loc)][:]
+#                    count += 1
+#                else: 
+#                    data[count+1][:] = cat_data[ind][:]
+#                    count += 1
+#                    ind += 1
+#            else:
+#                ind += 1
+#    # save final categorized data in file  
+#    print (data)
+#    df = pd.DataFrame(data)
+#    df.to_csv("all_classes/categorized_all_3classes_after.csv", index=False)
     
 
 

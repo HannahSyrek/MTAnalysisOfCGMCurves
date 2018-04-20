@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 # Initilize some parameters
 ts_length = 20
@@ -28,23 +30,25 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 #read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set_3classes.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_set_3classes_dtw.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
-train_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/generalizedSamples/generalized_Curves.csv", 
+labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_withNight.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
-testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)  
-tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)
-cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/categorized_all_3classes.csv",
+ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/ddtw_labeled.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1) 
+vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/vdtw_labeled.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1) 
+fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1)
+#testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
+                         #delimiter = ",", dtype = None, skip_header = 1)  
+#tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
+                          #delimiter = ",", dtype = None, skip_header = 1)
+cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
-logdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/logdata.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)
 _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [1,3]) 
 
-
-print cnndata
                        
 
 '''
@@ -73,8 +77,8 @@ def modify_rawData(data):
     return raw_data
        
 
-realdata = modify_rawData(_data)
 
+realdata = modify_rawData(_data)
                           
 '''
 Method to decode class labels of the classified data via CNN.
@@ -95,7 +99,45 @@ def decode_classes(data):
     
 # For the CNN data
 cnn_data = decode_classes(cnndata) 
-   
+
+#print ddtw_set.T[20]
+#print ddtw_set.T[21]
+#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
+#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
+
+print vbdtw_set.T[20]
+print vbdtw_set.T[21]
+print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
+print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+
+
+#print fbdtw_set.T[20]
+#print fbdtw_set.T[21]
+#print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
+#print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print cnn_data.T[20]
+#print labeled_set.T[20]
+#print accuracy_score(labeled_set.T[20],cnn_data.T[20])  
+#print confusion_matrix(labeled_set.T[20],cnn_data.T[20], labels = [1,4,6,5])  
+
+#0.516483516484 0.75
+#0.56043956044 0.76
+# 0.557692307692
+
+#0.421810699588 0.1
+#0.4670781893 0.2
+#0.427983539095 0.3
+#0.553497942387 0.4
+#0.551440329218 0.45
+#0.481481481481 0.5
+#0.5329218107 0.6
+# 0.495884773663 0.69
+#0.539094650206 0.7
+
+#0.512345679012 0.76
+#0.518518518519 0.8
+#0.430041152263 0.9
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
 replaced by -1.
@@ -152,7 +194,7 @@ def plotCategories(category):
             count += 1
     return count        
 
-print [plotCategories(6)]#,plotCategories(2),plotCategories(4),plotCategories(5),plotCategories(6)]
+#print [plotCategories(5)]#plotCategories(4),plotCategories(5),plotCategories(6)]
 
 '''
 Method to calculate the derivation of a given point, as it is used in
@@ -215,16 +257,16 @@ def global_Feature(ts):
 
 #==============================================================================
 #plot the results to visualize the found patterns
-#==============================================================================
-reload(sys)  
-sys.setdefaultencoding('utf8')
-plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-plt.legend(loc=1)
-plt.axis([0, ts_length-1, 10, 500])
-plt.ylabel('blood glucose content (mg/dL)')
-plt.xlabel('timesteps')
-plt.show()
-
+##==============================================================================
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
+#plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
+#plt.legend(loc=1)
+#plt.axis([0, ts_length-1, 10, 500])
+#plt.ylabel('blood glucose content (mg/dL)')
+#plt.xlabel('timesteps')
+#plt.show()
+#
 
 
 

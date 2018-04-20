@@ -26,15 +26,16 @@ class Generator:
     #C3 = Curve(3,280,105,100,250,180,70)    
     C4 = Curve(4,230,200,90,23,180,70)  
     # Residue class    
-#    C51 = Curve(5,110,90,100,23,180,70)  
-#    C52 = Curve(5,300,10,100,23,180,70)
-#    C53 = Curve(5,105,10,100,23,180,70)  
-#    C54 = Curve(5,350,100,20,23,180,70) 
+    C51 = Curve(5,110,90,100,23,180,70)  
+    C52 = Curve(5,300,10,100,23,180,70)
+    C53 = Curve(5,105,10,100,23,180,70)  
+    C54 = Curve(5,350,100,20,23,180,70) 
     
     C6 = Curve(6,260,80,250,23,180,70)
     global categories
     categories = [C1,C4,C6]
-    #categories2 = [C51,C52,C53,C54]
+    global categories2
+    categories2 = [C51,C52,C53,C54]
 
     '''
     Method to build the datamatrix.
@@ -42,11 +43,11 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((600,21))
+        dataset = np.zeros((200,21))
         counter = 0
-        for curve in categories:            
-            if(counter < 600):
-                for i in range(counter, counter +200):
+        for curve in categories2:            
+            if(counter < 200):
+                for i in range(counter, counter +50):
                     #generate the specific curve
                     c = curve.generate()
                     #smooth curve with savitzky_golay filter
@@ -54,7 +55,7 @@ class Generator:
                     chat = np.append(chat, curve.Categorie)
                     for j in range(0,21):
                         dataset[i][j] = chat[j]
-                counter = counter + 200    
+                counter = counter + 50    
         return dataset
                        
         
@@ -64,7 +65,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("test_set_3classes.csv",  index=False)
+        df.to_csv("class5_samples.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 

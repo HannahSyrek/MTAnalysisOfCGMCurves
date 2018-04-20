@@ -88,19 +88,18 @@ progression of the categories.
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
-    #y_true = []
     #weights = weighting_Algo(train)
-    weights =normalize(-121565, -106893)
+    weights = [0.38006354249404289, 0.61993645750595716]
     print weights
     global w_i 
     w_i= weights[0]
     global w_j
     w_j = weights[1]
-    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
-    #save all possible time series in a new matrix to iterate over all 
-    for i in range(0,len(test)-(ts_length-1)):
-        dyn_timeserie[i][:] = test[i:ts_length+i]
-    test = dyn_timeserie   
+#    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
+#    #save all possible time series in a new matrix to iterate over all 
+#    for i in range(0,len(test)-(ts_length-1)):
+#        dyn_timeserie[i][:] = test[i:ts_length+i]
+#    test = dyn_timeserie   
     # categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -126,13 +125,18 @@ def knn_AdaptiveFeaturebased(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.1)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.2)-1)]
+        # 0.535714285714 0.3
+        #0.505494505495 0.5
+        # 0.472527472527 bei 0.8
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
         _class += 1
-        if(_class == 3 or _class == 5):
+        if(_class == 2 or _class == 5):
             _class +=1
+            if(_class == 3):
+                _class +=1
      # Check if distance is higher than the particular threshold, assgin to residue class
     for i in dist_data:
         if(i[1]>i[2]):
@@ -141,7 +145,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdataset_AFBDTWModRawdata.csv",  index=False)     
+    df.to_csv("Data/AFBDTW_labeled.csv",  index=False)     
     return cat_data
     
   
@@ -193,12 +197,12 @@ def weighting_Algo(trainset):
                 num_same = 0
                 num_diff = 0
                 current_dist = S_x[-1]
-                print "currentdist:", current_dist
+                #print "currentdist:", current_dist
                 for i in dists:
                     if(i[-2]==class_):
                         class_dists.append(i[-1])
                 max_dist =np.max(class_dists)
-                print "maximum:", max_dist
+                #print "maximum:", max_dist
                 for j in dists:
                     if(current_dist<j[-1]<max_dist and j[-2]==class_):
                         num_same +=1
@@ -209,11 +213,11 @@ def weighting_Algo(trainset):
             class_ +=1
             if(class_==3 or class_==5):
                 class_+=1
-        print num_same_classes, num_diff_classes
+        #print num_same_classes, num_diff_classes
         w_i = sum(np.array(num_same_classes) - np.array(num_diff_classes))
         print w_i
         w.append(w_i)      
-    return w[0],w[1]
+    return normalize(w[0],w[1])
      
 
 '''
@@ -241,8 +245,8 @@ def normalize(w1,w2):
 
 
 #realdata = np.array(skipmissingdata(realdata))
-realdata = np.array(realdata)
-print knn_AdaptiveFeaturebased(trainset,realdata, 50)
+real_data = np.array(realdata)
+print knn_AdaptiveFeaturebased(trainset,labeled_set, 50)
 
 
 #==============================================================================
@@ -256,6 +260,9 @@ plt.axis([0, ts_length-1, 10, 400])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()
+
+
+
 
 
 

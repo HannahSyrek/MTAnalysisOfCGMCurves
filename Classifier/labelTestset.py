@@ -16,16 +16,36 @@ import matplotlib.pyplot as plt
 
 
 
-print len(realdata)
-r= np.array(realdata)
-r.resize((364,20))
+__data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
+                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3]) 
+print __data
+data = np.array(skipmissingdata(__data))
+data.resize((486,60))
+df = pd.DataFrame(data)
+df.to_csv("Classifier/Data/labeled_v10.csv",  index=False) 
 
-#df = pd.DataFrame(r)
-#df.to_csv("Classifier/Data/real_ModRaw.csv",  index=False) 
 
-#k =18
-#print r[k]
-#plt.plot(r[k])
+data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_v10.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
+print data
+print len(data[0])
+r= np.array(data)
+
+k =0
+j = k+1
+l = k+2
+i = k+3
+m = k+4
+n = k+5
+o = k+6
+print r[k]
+plt.plot(r[k], label = k+2)
+plt.plot(r[j], label = j+2)
+plt.plot(r[l], label = l+2)
+plt.plot(r[i], label = i+2)
+plt.plot(r[m], label = m+2)
+plt.plot(r[n], label = n+2)
+plt.plot(r[o], label = o+2)
     
 
 
@@ -48,12 +68,12 @@ r.resize((364,20))
 ##df = pd.DataFrame(real_data)
 ##df.to_csv("Classifier/Data/datasetLabeled.csv",  index=False)   
 #
-c_means=np.zeros((3,20))
-
-for i in range(0,20):
-    c_means[0][i] = np.mean(trainset.T[i][0:200])
-    c_means[1][i] = np.mean(trainset.T[i][200:400])
-    c_means[2][i] = np.mean(trainset.T[i][500:600])
+#c_means=np.zeros((3,20))
+#
+#for i in range(0,20):
+#    c_means[0][i] = np.mean(trainset.T[i][0:200])
+#    c_means[1][i] = np.mean(trainset.T[i][200:400])
+#    c_means[2][i] = np.mean(trainset.T[i][500:600])
     #c_means[3][i] = np.mean(trainset.T[i][600:800])
 
 # c_means[0]
@@ -86,15 +106,15 @@ for i in range(0,20):
 
        
 #print trainset[0][:-1]
-plt.plot(time_steps,c_means[0],label = "normal progression") 
-plt.plot(time_steps, c_means[1],label = "bolus to small")  
-plt.plot(time_steps, c_means[2],label = "correction of the bolus")  
+#plt.plot(time_steps,c_means[0],label = "normal progression") 
+#plt.plot(time_steps, c_means[1],label = "bolus to small")  
+#plt.plot(time_steps, c_means[2],label = "correction of the bolus")  
 #plt.plot(time_steps, c_means[3],label = "correction of the bolus") 
 
 
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
-plt.axis([0, ts_length-1, 10, 400])
+plt.axis([0, 59, 10, 400])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()

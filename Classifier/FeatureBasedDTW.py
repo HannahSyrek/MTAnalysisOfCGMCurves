@@ -87,13 +87,12 @@ progression of the categories.
 '''
 def knn_Featurebased(train,test,w):
     predictions=[]
-    #y_true = []
     dists = []
-    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
-    #save all possible 9716 time series in a new matrix to iterate over all 
-    for i in range(0,len(test)-(ts_length-1)):
-        dyn_timeserie[i][:] = test[i:ts_length+i]
-    test = dyn_timeserie   
+#    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
+#    #save all possible 9716 time series in a new matrix to iterate over all 
+#    for i in range(0,len(test)-(ts_length-1)):
+#        dyn_timeserie[i][:] = test[i:ts_length+i]
+#    test = dyn_timeserie   
     #categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -119,13 +118,15 @@ def knn_Featurebased(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.1)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.2)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
         _class += 1
-        if(_class == 3 or _class == 5):
+        if(_class == 2 or _class == 5):
             _class +=1
+            if(_class == 3):
+                _class +=1
      # Check if distance is higher than the particular threshold, assgin to residue class
     for i in dist_data:
         if(i[1]>i[2]):
@@ -134,14 +135,13 @@ def knn_Featurebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdataset_FBDTWDynModRawdata.csv",  index=False)     
+    df.to_csv("Data/fbdtw_labeled.csv",  index=False)     
     return cat_data
 
 
-#realdata = np.array(skipmissingdata(realdata))
-realdata = np.array(realdata)
-print knn_Featurebased(trainset,realdata, 50)
-#print [plotCategories(6)],plotCategories(2),plotCategories(4),plotCategories(6),plotCategories(5)] 
+
+real_data = np.array(realdata)
+print knn_Featurebased(trainset,labeled_set, 50)
 
 
 #==============================================================================
