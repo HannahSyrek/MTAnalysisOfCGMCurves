@@ -118,7 +118,7 @@ def knn_Featurebased(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.2)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.3)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -135,7 +135,7 @@ def knn_Featurebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/fbdtw_labeled.csv",  index=False)     
+    df.to_csv("Data/fbdtw_labeled_with_labeledTraining.csv",  index=False)     
     return cat_data
 
 

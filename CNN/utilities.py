@@ -51,15 +51,17 @@ def change_label(lab):
             new_lab[i]=2
         elif(new_lab[i]==6):
             new_lab[i]=3
+        elif(new_lab[i]==5):
+            new_lab[i]=4
     return new_lab
 
 '''
 '''
-def one_hot(labels, n_class=3):
+def one_hot(labels, n_class=4):
     expansion = np.eye(n_class)
-    print (expansion)
+    #print (expansion)
     y = expansion[:,labels-1].T
-    print (y)
+    #print (y)
     assert y.shape[1] == n_class, "Wrong number of labels!"   
     return y
 

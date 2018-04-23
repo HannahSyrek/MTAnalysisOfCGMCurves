@@ -92,9 +92,10 @@ def knnDynamic(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.8)-1)]
+        #_threshold = sort_dist_vec[int((len(sort_dist_vec)*0.8)-1)] für generator training
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.31)-1)]
         # 0.593406593407 0.23
-        ##########0.601648351648 0.24
+        ##############0.601648351648 0.24
         #0.598901098901 0.25
         #0.590659340659 0.26
         #0.582417582418 0.4
@@ -111,7 +112,10 @@ def knnDynamic(train,test,w):
          
         #0.588477366255 0.3 
         #0.4670781893 0.8
-        #0.430041152263 0.9             
+        #0.430041152263 0.9  
+
+        #0.495884773663     0.1   
+        ################## 0.5267    0.31   
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -129,7 +133,7 @@ def knnDynamic(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify code with: return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/vdtw_labeled.csv",  index=False)     
+    df.to_csv("Data/vdtw_labeled_with_labeledTrainset.csv",  index=False)     
     return cat_data
 
    

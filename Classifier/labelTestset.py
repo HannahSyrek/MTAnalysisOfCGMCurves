@@ -18,20 +18,29 @@ import matplotlib.pyplot as plt
 
 __data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3]) 
-print __data
-data = np.array(skipmissingdata(__data))
-data.resize((486,60))
-df = pd.DataFrame(data)
-df.to_csv("Classifier/Data/labeled_v10.csv",  index=False) 
+
+#data_15 = []
+#for count, i in enumerate(__data):
+#    if(count % 3 ==0):
+#        #print count
+#        data_15.append(__data[count])
+#        count +=1
+#    else:
+#        count +=1
+#   
+#data = np.array(skipmissingdata(data_15))
+##print len(data)/20
+#data.resize((len(data)/20,20))
+#df = pd.DataFrame(data)
+#df.to_csv("Classifier/Data/x.csv",  index=False) 
 
 
 data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_v10.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)
-print data
-print len(data[0])
+                        delimiter = ",", dtype = None, skip_header = 1)
+
 r= np.array(data)
 
-k =0
+k =540
 j = k+1
 l = k+2
 i = k+3
@@ -39,6 +48,13 @@ m = k+4
 n = k+5
 o = k+6
 print r[k]
+print r[j]
+print r[l]
+print r[i]
+print r[m]
+print r[n]
+print r[o]
+
 plt.plot(r[k], label = k+2)
 plt.plot(r[j], label = j+2)
 plt.plot(r[l], label = l+2)
@@ -114,7 +130,7 @@ plt.plot(r[o], label = o+2)
 
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
-plt.axis([0, 59, 10, 400])
+plt.axis([0, 19, 10, 400])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()
