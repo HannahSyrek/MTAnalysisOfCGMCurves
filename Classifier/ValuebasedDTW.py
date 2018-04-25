@@ -70,10 +70,10 @@ def knnDynamic(train,test,w):
         print ind
         for j in train:
             # For the derivation of the datapoints, substitute the following two lines with:
-            #if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
-                #dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
-            if LB_Keogh(i[:],j[:-1],10)<min_dist:
-                dist=DTWDistanceFast(i[:],j[:-1],w)
+            if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
+                dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
+            #if LB_Keogh(i[:],j[:-1],10)<min_dist:
+                #dist=DTWDistanceFast(i[:],j[:-1],w)
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
@@ -92,8 +92,12 @@ def knnDynamic(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
+        print "sortierte liste", sort_dist_vec
+        print len(sort_dist_vec), _class
         #_threshold = sort_dist_vec[int((len(sort_dist_vec)*0.8)-1)] für generator training
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.31)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.5)-1)]
+        print int((len(sort_dist_vec)*0.1)-1), _class
+        print _threshold, _class
         # 0.593406593407 0.23
         ##############0.601648351648 0.24
         #0.598901098901 0.25
@@ -133,7 +137,7 @@ def knnDynamic(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify code with: return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/vdtw_labeled_with_labeledTrainset.csv",  index=False)     
+    df.to_csv("Data/DDtw_labeled_with_labeledTrainset.csv",  index=False)     
     return cat_data
 
    

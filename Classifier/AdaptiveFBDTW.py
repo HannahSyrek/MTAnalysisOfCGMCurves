@@ -88,8 +88,8 @@ progression of the categories.
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
-    #weights = weighting_Algo(train)
-    weights = [0.38006354249404289, 0.61993645750595716]
+    weights = weighting_Algo(train)
+    #weights = [0.38006354249404289, 0.61993645750595716]
     print weights
     global w_i 
     w_i= weights[0]
@@ -145,7 +145,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/AFBDTW_labeled.csv",  index=False)     
+    df.to_csv("Data/AFBDTW_labeled_Training.csv",  index=False)     
     return cat_data
     
   

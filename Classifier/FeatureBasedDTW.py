@@ -118,7 +118,7 @@ def knn_Featurebased(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 10 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.3)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.4)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     

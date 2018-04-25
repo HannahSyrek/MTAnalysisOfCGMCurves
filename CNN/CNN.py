@@ -15,18 +15,20 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 
 # Prepare data
-X_train, labels_train = read_data(data_path = "./all_classes/labeled_trainset.csv")
-X_test, labels_test = read_data(data_path = "./all_classes/labeled_testset.csv")
-_raw = np.genfromtxt("./all_classes/labeled_withNight.csv", delimiter = ",", skip_header = 1)
+X_train, labels_train = read_data(data_path = "./all_classes/5classes_labeled_and_generated_trainset.csv")
+X_test, labels_test = read_data(data_path = "./all_classes/labeled_v2.csv")
+_raw = np.genfromtxt("./all_classes/new_raw2.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
     data[i][:] = _raw[i][:]
 X_raw = data.reshape((len(_raw), 20, 1))     
 print (X_raw)
-
+print (len(X_train))
+print (len(X_test))
 # Normalize
 X_train, X_test = standardize(X_train, X_test)
-X_train, X_raw = standardize(X_train, X_raw)
+X_t, X_raw = standardize(X_train, X_raw)
+
 X_tr, X_vld, lab_tr, lab_vld = train_test_split(X_train, labels_train, stratify = labels_train, random_state = 123)
 
 lab_tr = change_label(lab_tr)
@@ -43,8 +45,8 @@ y_test = one_hot(labels_test)
 batch_size = 50
 seq_len = 20
 learning_rate = 0.0001
-epochs = 1200
-n_classes = 3
+epochs = 2000
+n_classes = 4
 n_channels = 20
 
 # Construct the graph
@@ -127,7 +129,7 @@ with tf.Session(graph=graph) as sess:
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat54.ckpt")
+    saver.save(sess, "checkpoints-cnn/dat72.ckpt")
 #    
 ## Plot training and test loss
 #t = np.arange(iteration-1)
@@ -158,28 +160,28 @@ with tf.Session(graph=graph) as sess:
     df = pd.DataFrame(log_data)
     df.to_csv("Data/logdata.csv", index=False)
     
-    # Implement thresholds to assign samples to the residue class
-    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
-    new_preds = []
-    count=0
-    for _class in range(0,3):
-        print (count)
-        _threshold = 0
-        all_maxima = []
-        for i in _logs:
-            if(i[-1]==_class):
-                all_maxima.append(np.amax(i[:-1]))
-        maxima_sorted = np.sort(all_maxima)
-        _threshold = maxima_sorted[int(len(all_maxima)*0.5)]
-        print (_threshold)
-        for jnd, j in enumerate(_logs):
-            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
-                _logs[jnd][-1] = 4
-        count +=1        
-    for i in _logs:
-        new_preds.append(i[-1])       
-      
-    cat_data = np.concatenate((np.array(_raw), np.array([new_preds]).T), axis = 1) 
+#    # Implement thresholds to assign samples to the residue class
+#    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
+#    new_preds = []
+#    count=0
+#    for _class in range(0,3):
+#        print (count)
+#        _threshold = 0
+#        all_maxima = []
+#        for i in _logs:
+#            if(i[-1]==_class):
+#                all_maxima.append(np.amax(i[:-1]))
+#        maxima_sorted = np.sort(all_maxima)
+#        _threshold = maxima_sorted[int(len(all_maxima)*0.6)]
+#        print (_threshold)
+#        for jnd, j in enumerate(_logs):
+#            if(np.amax(j[:-1])<(_threshold) and j[-1]==_class):
+#                _logs[jnd][-1] = 4
+#        count +=1        
+#    for i in _logs:
+#        new_preds.append(i[-1])       
+#      
+    cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
     df = pd.DataFrame(cat_data)
     df.to_csv("Data/CNN_labeled_with_labeledTraining.csv", index=False)
 #    df.to_csv("Data/logdata_transformed.csv", index=False)

@@ -33,11 +33,13 @@ time_steps = np.asarray(range(0,ts_length))
 trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/labeled_trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
 labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_withNight.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
+labeled_set_new = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/5classes_labeled_testset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1) 
-ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/ddtw_labeled.csv", 
+ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDtw_labeled_with_labeledTrainset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/vdtw_labeled_with_labeledTrainset.csv", 
-                        delimiter = ",", dtype = None, skip_header = 1) 
+#vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/vdtw_labeled_with_labeledTrainset.csv", 
+                        #delimiter = ",", dtype = None, skip_header = 1) 
 fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_with_labeledTraining.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 #testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
@@ -93,7 +95,7 @@ def decode_classes(data):
             i[-1] = 6
         #elif(i[-1]==3):
             #i[-1] = 6
-        elif(i[-1]==4):
+        elif(i[-1]==3):
             i[-1] = 5
     return data
     
@@ -109,17 +111,17 @@ cnn_data = decode_classes(cnndata)
 #print vbdtw_set.T[21]
 #print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
 #print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
-#
+
 
 #print fbdtw_set.T[20]
 #print fbdtw_set.T[21]
 #print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
 #print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
-
-print cnn_data.T[20]
-print labeled_set.T[20]
-print accuracy_score(labeled_set.T[20],cnn_data.T[20])  
-print confusion_matrix(labeled_set.T[20],cnn_data.T[20], labels = [1,4,6,5])  
+#
+#print cnn_data.T[20]
+#print labeled_set.T[20]
+#print accuracy_score(labeled_set_new.T[20],cnn_data.T[20])  
+#print confusion_matrix(labeled_set_new.T[20],cnn_data.T[20], labels = [1,4,6,5])  
 
 #0.516483516484 0.75
 #0.56043956044 0.76

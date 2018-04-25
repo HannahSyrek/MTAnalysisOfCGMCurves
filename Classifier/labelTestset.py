@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 
 
-__data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
+__data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10_3-201803-162534.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3]) 
 
 #data_15 = []
@@ -28,19 +28,18 @@ __data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10.csv",
 #    else:
 #        count +=1
 #   
-#data = np.array(skipmissingdata(data_15))
-##print len(data)/20
-#data.resize((len(data)/20,20))
-#df = pd.DataFrame(data)
-#df.to_csv("Classifier/Data/x.csv",  index=False) 
+data = np.array(skipmissingdata(__data))
+data.resize((len(data),20))
+df = pd.DataFrame(data)
+df.to_csv("Classifier/Data/labeled_v10_02.csv",  index=False) 
 
 
-data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_v10.csv", 
+data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_v10_02.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 
 r= np.array(data)
 
-k =540
+k =399
 j = k+1
 l = k+2
 i = k+3
@@ -130,7 +129,7 @@ plt.plot(r[o], label = o+2)
 
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
-plt.axis([0, 19, 10, 400])
+plt.axis([0, 19, 10, 500])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
 plt.show()
