@@ -55,6 +55,19 @@ def change_label(lab):
             new_lab[i]=4
     return new_lab
 
+
+def change_class_label(lab):
+    new_lab = lab.astype(int)
+    for i in range(0,len(new_lab)):
+        if(new_lab[i]==0):
+            new_lab[i]=1
+        elif(new_lab[i]==1):
+            new_lab[i]=2
+        elif(new_lab[i]==2):
+            new_lab[i]=3
+        elif(new_lab[i]==3):
+            new_lab[i]=4
+    return new_lab
 '''
 '''
 def one_hot(labels, n_class=4):

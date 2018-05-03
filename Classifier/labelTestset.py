@@ -15,9 +15,9 @@ import sys
 import matplotlib.pyplot as plt
 
 
-
-__data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10_3-201803-162534.csv",
-                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3]) 
+#
+#__data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10_3-201803-162534.csv",
+#                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3]) 
 
 #data_15 = []
 #for count, i in enumerate(__data):
@@ -28,18 +28,19 @@ __data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v10_3-20180
 #    else:
 #        count +=1
 #   
-data = np.array(skipmissingdata(__data))
-data.resize((len(data),20))
-df = pd.DataFrame(data)
-df.to_csv("Classifier/Data/labeled_v10_02.csv",  index=False) 
+#data = np.array(skipmissingdata(__data))
+#data.resize((len(data),20))
+#df = pd.DataFrame(data)
+#df.to_csv("Classifier/Data/labeled_v10_02.csv",  index=False) 
 
-
+#
 data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_v10_02.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 
 r= np.array(data)
 
-k =399
+#k = 482
+k =999
 j = k+1
 l = k+2
 i = k+3

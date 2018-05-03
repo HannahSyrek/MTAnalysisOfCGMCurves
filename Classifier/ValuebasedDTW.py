@@ -58,11 +58,11 @@ progression of the categories.
 def knnDynamic(train,test,w):
     predictions=[]
     dists = []
-#    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
-#    #save all time series with an overlap of 95 % in a new matrix 
-#    for i in range(0,len(test)-(ts_length-1)):
-#        dyn_timeserie[i][:] = test[i:ts_length+i]
-#    test = dyn_timeserie   
+    overlap_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
+    #save all time series with an overlap of 95 % in a new matrix 
+    for i in range(0,len(test)-(ts_length-1)):
+        overlap_timeserie[i][:] = test[i:ts_length+i]
+    test = overlap_timeserie   
     # categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -70,56 +70,28 @@ def knnDynamic(train,test,w):
         print ind
         for j in train:
             # For the derivation of the datapoints, substitute the following two lines with:
-            if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
-                dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
-            #if LB_Keogh(i[:],j[:-1],10)<min_dist:
-                #dist=DTWDistanceFast(i[:],j[:-1],w)
+            #if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
+                #dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
+            if LB_Keogh(i[:],j[:-1],10)<min_dist:
+                dist=DTWDistanceFast(i[:],j[:-1],w)
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
         # Assign the best 10 % of the time series to the respective class
         predictions.append(closest_seq[-1])  
         dists.append(min_dist) 
-        
+    # Compute particular threshold for every class    
     threshold_vec = np.zeros(len(dists))
     dist_data = np.concatenate((np.array([predictions]).T, np.array([dists]).T, np.array([threshold_vec]).T), axis = 1)    
-    _class = 1
-    print dist_data    
+    _class = 1 
     while(_class < 7):
         dist_vec = []
         for i in dist_data: 
             if(i[0]==_class):
                 dist_vec.append(i[1])
-        # Take only the best 10 percent of the assigned curves
+        # Take only the best 75 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        print "sortierte liste", sort_dist_vec
-        print len(sort_dist_vec), _class
-        #_threshold = sort_dist_vec[int((len(sort_dist_vec)*0.8)-1)] für generator training
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.5)-1)]
-        print int((len(sort_dist_vec)*0.1)-1), _class
-        print _threshold, _class
-        # 0.593406593407 0.23
-        ##############0.601648351648 0.24
-        #0.598901098901 0.25
-        #0.590659340659 0.26
-        #0.582417582418 0.4
-        #0.568681318681 0.45
-        #0.554945054945 0.5
-        #0.425824175824 0.9
-        
-        #0.578189300412 0.1
-        #0.604938271605 0.19
-        #0.609053497942 0.2
-        # 0.609053497942 0.21
-        #0.609053497942 0.23
-        #0.604938271605 0.24
-         
-        #0.588477366255 0.3 
-        #0.4670781893 0.8
-        #0.430041152263 0.9  
-
-        #0.495884773663     0.1   
-        ################## 0.5267    0.31   
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.25)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -127,28 +99,19 @@ def knnDynamic(train,test,w):
         if(_class == 2 or _class == 5):
             _class +=1
             if(_class == 3):
-                _class +=1
-                
+                _class +=1 
     # Check if distance is bigger than particular threshold, in this case, assgin the residue class
     for i in dist_data:
         if(i[1]>i[2]):
             i[0] = 5.0
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
-    #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    # Accuracy: modify code with: return accuracy_score(y_true,predictions)           
+    #attention: the data includes repetitions of the assigned curves-> use skipRepetitions          
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/DDtw_labeled_with_labeledTrainset.csv",  index=False)     
+    df.to_csv("Data/VBDTW_labeled_.csv",  index=False)     
     return cat_data
 
-   
-    
-    
 
-
-
-real_data = np.array(realdata)
-print knnDynamic(trainset,labeled_set, 50)
-
+print knnDynamic(trainset,raw_data, 50)
 
 #==============================================================================
 #plot the results to visualize the found patterns

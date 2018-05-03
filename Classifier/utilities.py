@@ -2,10 +2,11 @@
 """
 Created on Sat Mar 10 16:06:59 2018
 @author: hannah syrek
-This script implements some needed utilities and parameter to run the classification algorithms.
+This script implements some needed utilities and parameter to run the classification 
+algorithms.
 """
 
-#Imports
+# Needed imports
 import numpy as np
 import pandas as pd
 import sys
@@ -21,35 +22,33 @@ lower_bound = []
 upper_bound = []
 global w_i
 global w_j
-# Fill time step vector to plot the cgm curvesover time
+
+# Fill time step vector to plot the cgm curves over time
 for i in range(0, ts_length):
     lower_bound.append(low_value)
     upper_bound.append(up_value)
 time_steps = np.asarray(range(0,ts_length))
 
 
+# Read the needed data from .csv files
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
+labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_01.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)                         
+_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
+                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])
 
-#read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/labeled_trainset.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)
-labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_withNight.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)
-labeled_set_new = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/5classes_labeled_testset.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1) 
 ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDtw_labeled_with_labeledTrainset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-#vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/vdtw_labeled_with_labeledTrainset.csv", 
-                        #delimiter = ",", dtype = None, skip_header = 1) 
+vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1) 
+#afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_Training.csv", 
+                        #delimiter = ",", dtype = None, skip_header = 1)
 fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_with_labeledTraining.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
-#testset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/test_set.csv", 
-                         #delimiter = ",", dtype = None, skip_header = 1)  
-#tempdata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/catdatasetDDTWModRawdata.csv",
-                          #delimiter = ",", dtype = None, skip_header = 1)
-cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled_with_labeledTraining.csv",
+cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
-_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
-                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [1,3]) 
+ 
 
                        
 
@@ -66,8 +65,7 @@ def modify_rawData(data):
             ind +=1
         else:
             mod_data.append(i)
-            ind +=1
-            
+            ind +=1            
     raw_data =[]    
     for ind,i in enumerate(mod_data):
         # Skip missing data
@@ -78,12 +76,10 @@ def modify_rawData(data):
             ind+=1
     return raw_data
        
-
-
-realdata = modify_rawData(_data)
                           
 '''
-Method to decode class labels of the classified data via CNN.
+Method to decode class labels of the classified data,its a special method for 
+the CNN data, caused by the encoding in the calculations.
 '''
 def decode_classes(data):    
     for i in data:
@@ -93,53 +89,13 @@ def decode_classes(data):
             i[-1] = 4
         elif(i[-1]==2):
             i[-1] = 6
-        #elif(i[-1]==3):
-            #i[-1] = 6
         elif(i[-1]==3):
             i[-1] = 5
-    return data
-    
-# For the CNN data
+    return data    
+
 cnn_data = decode_classes(cnndata) 
 
-#print ddtw_set.T[20]
-#print ddtw_set.T[21]
-#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
-#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
 
-#print vbdtw_set.T[20]
-#print vbdtw_set.T[21]
-#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
-#print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
-
-
-#print fbdtw_set.T[20]
-#print fbdtw_set.T[21]
-#print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
-#print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
-#
-#print cnn_data.T[20]
-#print labeled_set.T[20]
-#print accuracy_score(labeled_set_new.T[20],cnn_data.T[20])  
-#print confusion_matrix(labeled_set_new.T[20],cnn_data.T[20], labels = [1,4,6,5])  
-
-#0.516483516484 0.75
-#0.56043956044 0.76
-# 0.557692307692
-
-#0.421810699588 0.1
-#0.4670781893 0.2
-#0.427983539095 0.3
-#0.553497942387 0.4
-#0.551440329218 0.45
-#0.481481481481 0.5
-#0.5329218107 0.6
-# 0.495884773663 0.69
-#0.539094650206 0.7
-
-#0.512345679012 0.76
-#0.518518518519 0.8
-#0.430041152263 0.9
 '''
 Skip the missing cgm values in the real data. Missing values were previously 
 replaced by -1.
@@ -152,8 +108,10 @@ def skipmissingdata(data):
         else:
             new_data.append(i)            
     return new_data
-   
  
+raw_data = skipmissingdata(_data) 
+
+
 '''
 Method to skip the repetitions in the dynamic categorized data.
 '''
@@ -162,7 +120,7 @@ def skipRepetitions(data):
     cat_data[0][:] = data[0][:-2]
     count = 0
     ind = 1
-    while(ind < len(data)-2):
+    while(ind<len(data)-2):
         if(cat_data[count][-1] != data[ind][-3]):  
             if(data[ind][-3] == data[ind+1][-3]):
                 tmp_ind = ind
@@ -179,16 +137,15 @@ def skipRepetitions(data):
                 ind +=1
         else:
             ind +=1        
-    df = pd.DataFrame(cat_data)
-    df.to_csv("Data/catdataWithoutRepetitionsFBDTWModRaws.csv", index=False)       
+    #df = pd.DataFrame(cat_data)
+    #df.to_csv("Data/catdataWithoutRepetitionsFBDTWModRaws.csv", index=False)       
     return cat_data
 
  
 '''
 Method to plot all assigned curves of the particular category.
 '''        
-def plotCategories(category): 
-    data = cnn_data#skipRepetitions(tempdata)
+def plotCategories(category, data): 
     count = 0
     for i in data:
         if(i[-1]==category):
@@ -196,7 +153,6 @@ def plotCategories(category):
             count += 1
     return count        
 
-#print [plotCategories(5)]#plotCategories(4),plotCategories(5),plotCategories(6)]
 
 '''
 Method to calculate the derivation of a given point, as it is used in
@@ -245,7 +201,7 @@ dependend only on the second respectively the penultimate value.
 def global_Feature(ts):
     new_timeserie = np.zeros((len(ts),2))
     #set the first and the last feature vector each depending on the follwoing 
-    #respectively the previous point, additionaly the second, cause by some
+    #respectively the previous point, additionaly the second, caused by some
     #access problems to vector elements in connection with division with zero in the case of i=1
     new_timeserie[:][0] = [ ts[0] , ts[0]- ((sum(ts[1:])) / float(len(ts)-1)) ] 
     new_timeserie[:][1] = [ ts[1]-ts[0] , ts[1]- ((sum(ts[2:])) / float(len(ts)-1)) ]
@@ -257,18 +213,49 @@ def global_Feature(ts):
     return new_timeserie
 
 
+
+
+#=========================================================================================
+# Print accuracy rate and particular confusion matrix of the current classification result
+#=========================================================================================
+
+#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
+#print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
+#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
+
+#print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
+#print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
+#print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(labeled_set.T[20],cnn_data.T[20])  
+#print confusion_matrix(labeled_set.T[20],cnn_data.T[20], labels = [1,4,6,5])  
+
+
 #==============================================================================
-#plot the results to visualize the found patterns
-##==============================================================================
-#reload(sys)  
-#sys.setdefaultencoding('utf8')
-#plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
-#plt.legend(loc=1)
-#plt.axis([0, ts_length-1, 10, 500])
-#plt.ylabel('blood glucose content (mg/dL)')
-#plt.xlabel('timesteps')
-#plt.show()
-#
+# Plot the results to visualize the found patterns
+#==============================================================================
+
+print [plotCategories(1,cnn_data),plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
+#print [plotCategories(1,skipRepetitions(x_data)),plotCategories(4,skipRepetitions(x_data),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
+plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
+plt.legend(loc=1)
+plt.axis([0, ts_length-1, 10, 500])
+plt.ylabel('blood glucose content (mg/dL)')
+plt.xlabel('timesteps')
+plt.show()
+
+
+
+
+
+
 
 
 
