@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
-from sklearn.metrics import accuracy_score
 
 
 '''
@@ -78,8 +77,6 @@ def LB_Keogh(s1,s2,r):
 
 
 
-
-
 '''
 Implements the k-NearestNeighbor classification to determine the similarity 
 between time series, iterate point by point over the hole dataset to find the 
@@ -116,9 +113,9 @@ def knn_Featurebased(train,test,w):
         for i in dist_data: 
             if(i[0]==_class):
                 dist_vec.append(i[1])
-        # Take only the best 10 percent of the assigned curves
+        # Take only the best 25 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.24)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.5)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -128,19 +125,17 @@ def knn_Featurebased(train,test,w):
             if(_class == 3):
                 _class +=1
      # Check if distance is higher than the particular threshold, assgin to residue class
-    for i in dist_data:
-        if(i[1]>i[2]):
-            i[0] = 5.0
+   # for i in dist_data:
+       # if(i[1]>i[2]):
+          #  i[0] = 5.0
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/fbdtw_labeled_with_labeledTraining.csv",  index=False)     
+    df.to_csv("Data/fbdtw_labeled_trainset.csv",  index=False)     
     return cat_data
 
 
 
-real_data = np.array(realdata)
 print knn_Featurebased(trainset,labeled_set, 50)
 
 

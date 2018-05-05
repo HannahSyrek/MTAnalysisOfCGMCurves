@@ -31,26 +31,28 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 # Read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
-labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/labeled_01.csv", 
+labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/testset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)                         
 _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])
 
-ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDtw_labeled_with_labeledTrainset.csv", 
+
+ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDTW_labeled_trainset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_.csv", 
+vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_test.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-#afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_Training.csv", 
-                        #delimiter = ",", dtype = None, skip_header = 1)
-fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_with_labeledTraining.csv", 
+afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_test.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1)
+fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
- 
+x_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1)
 
-                       
+                     
 
 '''
 Method to modify the raw data, skip all cgm values between 0 and 6 o'clock.
@@ -125,7 +127,7 @@ def skipRepetitions(data):
             if(data[ind][-3] == data[ind+1][-3]):
                 tmp_ind = ind
                 dists = []
-                while(ind<7279 and data[ind][-3]==data[ind+1][-3]):
+                while(ind<len(data)-1 and data[ind][-3]==data[ind+1][-3]):
                     dists = np.append(dists, data[ind][-2])
                     ind +=1
                 min_loc = np.argmin(dists)
@@ -137,8 +139,8 @@ def skipRepetitions(data):
                 ind +=1
         else:
             ind +=1        
-    #df = pd.DataFrame(cat_data)
-    #df.to_csv("Data/catdataWithoutRepetitionsFBDTWModRaws.csv", index=False)       
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/withoutReps.csv", index=False)       
     return cat_data
 
  
@@ -214,7 +216,6 @@ def global_Feature(ts):
 
 
 
-
 #=========================================================================================
 # Print accuracy rate and particular confusion matrix of the current classification result
 #=========================================================================================
@@ -222,8 +223,8 @@ def global_Feature(ts):
 #print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
 #print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
 
-#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
-#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
+print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
+print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
 
 #print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
 #print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
@@ -239,8 +240,9 @@ def global_Feature(ts):
 # Plot the results to visualize the found patterns
 #==============================================================================
 
-print [plotCategories(1,cnn_data),plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
-#print [plotCategories(1,skipRepetitions(x_data)),plotCategories(4,skipRepetitions(x_data),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
+#print [plotCategories(1,cnn_data),plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
+
+#print [plotCategories(1,skipRepetitions(x_data)),plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
 
 reload(sys)  
 sys.setdefaultencoding('utf8')

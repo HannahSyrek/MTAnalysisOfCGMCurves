@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
-from sklearn.metrics import accuracy_score
+
 
 
 
@@ -89,7 +89,6 @@ def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
     weights = weighting_Algo(train)
-    #weights = [0.38006354249404289, 0.61993645750595716]
     print weights
     global w_i 
     w_i= weights[0]
@@ -123,12 +122,9 @@ def knn_AdaptiveFeaturebased(train,test,w):
         for i in dist_data: 
             if(i[0]==_class):
                 dist_vec.append(i[1])
-        # Take only the best 10 percent of the assigned curves
+        # Take only the best 25 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.2)-1)]
-        # 0.535714285714 0.3
-        #0.505494505495 0.5
-        # 0.472527472527 bei 0.8
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.4)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -138,17 +134,16 @@ def knn_AdaptiveFeaturebased(train,test,w):
             if(_class == 3):
                 _class +=1
      # Check if distance is higher than the particular threshold, assgin to residue class
-    for i in dist_data:
-        if(i[1]>i[2]):
-            i[0] = 5.0
+    #for i in dist_data:
+        #if(i[1]>i[2]):
+           # i[0] = 5.0
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
-    # Accuracy: modify the code with-> y_true.append(i[-1]),return accuracy_score(y_true,predictions)           
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/AFBDTW_labeled_Training.csv",  index=False)     
+    df.to_csv("Data/AFBDTW_labeled_trainset.csv",  index=False)     
     return cat_data
     
-  
+
 '''
 Method to calculate the distance between two time series, componentwise and 
 depending on local and global feature of the particular time serie that were 
@@ -244,10 +239,7 @@ def normalize(w1,w2):
 
 
 
-#realdata = np.array(skipmissingdata(realdata))
-real_data = np.array(realdata)
-print knn_AdaptiveFeaturebased(trainset,labeled_set, 50)
-
+print knn_AdaptiveFeaturebased(trainset,labeled_set, 50)  
 
 #==============================================================================
 #plot the results to visualize the found patterns

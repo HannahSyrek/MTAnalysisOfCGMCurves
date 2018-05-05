@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
-from sklearn.metrics import accuracy_score
 
 
 '''
@@ -58,11 +57,11 @@ progression of the categories.
 def knnDynamic(train,test,w):
     predictions=[]
     dists = []
-    overlap_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
-    #save all time series with an overlap of 95 % in a new matrix 
-    for i in range(0,len(test)-(ts_length-1)):
-        overlap_timeserie[i][:] = test[i:ts_length+i]
-    test = overlap_timeserie   
+#    overlap_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
+#    #save all time series with an overlap of 95 % in a new matrix 
+#    for i in range(0,len(test)-(ts_length-1)):
+#        overlap_timeserie[i][:] = test[i:ts_length+i]
+#    test = overlap_timeserie   
     # categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -70,14 +69,14 @@ def knnDynamic(train,test,w):
         print ind
         for j in train:
             # For the derivation of the datapoints, substitute the following two lines with:
-            #if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
-                #dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
-            if LB_Keogh(i[:],j[:-1],10)<min_dist:
-                dist=DTWDistanceFast(i[:],j[:-1],w)
+            if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
+                dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
+            #if LB_Keogh(i[:],j[:-1],10)<min_dist:
+                #dist=DTWDistanceFast(i[:],j[:-1],w)
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
-        # Assign the best 10 % of the time series to the respective class
+        # Assign the best 75 % of the time series to the respective class
         predictions.append(closest_seq[-1])  
         dists.append(min_dist) 
     # Compute particular threshold for every class    
@@ -91,7 +90,7 @@ def knnDynamic(train,test,w):
                 dist_vec.append(i[1])
         # Take only the best 75 percent of the assigned curves
         sort_dist_vec = np.sort(dist_vec)
-        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.25)-1)]
+        _threshold = sort_dist_vec[int((len(sort_dist_vec)*0.3)-1)]
         for j in dist_data:
             if(j[0]==_class):
                 j[-1] = _threshold     
@@ -107,11 +106,11 @@ def knnDynamic(train,test,w):
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions          
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/VBDTW_labeled_.csv",  index=False)     
+    df.to_csv("Data/DDTW_labeled_trainset.csv", index=False)     
     return cat_data
 
 
-print knnDynamic(trainset,raw_data, 50)
+print knnDynamic(trainset,labeled_set, 50)
 
 #==============================================================================
 #plot the results to visualize the found patterns

@@ -16,8 +16,8 @@ cgmdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))
 cgm_data = skipmissingdata(cgmdata)
-patterns = decode_classes(np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)) 
+patterns = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/withoutReps.csv",
+                          delimiter = ",", dtype = None, skip_header = 1)
 temp_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1)
 raw_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
