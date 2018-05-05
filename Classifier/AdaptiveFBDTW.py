@@ -89,6 +89,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
     weights = weighting_Algo(train)
+    #[0.5385535657413113, 0.4614464342586887]
     print weights
     global w_i 
     w_i= weights[0]

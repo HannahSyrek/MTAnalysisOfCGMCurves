@@ -31,7 +31,7 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 # Read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
 labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/testset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)                         
@@ -43,13 +43,13 @@ ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifie
                         delimiter = ",", dtype = None, skip_header = 1) 
 vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_test.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_test.csv", 
+afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_trainset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
-fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_.csv", 
+fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_traingen.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
-x_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_.csv", 
+x_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_raw.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 
                      
@@ -112,7 +112,6 @@ def skipmissingdata(data):
     return new_data
  
 raw_data = skipmissingdata(_data) 
-
 
 '''
 Method to skip the repetitions in the dynamic categorized data.
@@ -223,8 +222,8 @@ def global_Feature(ts):
 #print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
 #print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
 
-print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
-print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
+#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
+#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
 
 #print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
 #print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
@@ -242,8 +241,8 @@ print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])
 
 #print [plotCategories(1,cnn_data),plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
 
-#print [plotCategories(1,skipRepetitions(x_data)),plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
-
+print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
+print len([plotCategories(6,skipRepetitions(x_data))])
 reload(sys)  
 sys.setdefaultencoding('utf8')
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')

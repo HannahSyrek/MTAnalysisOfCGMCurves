@@ -131,7 +131,7 @@ def knn_Featurebased(train,test,w):
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/fbdtw_labeled_trainset.csv",  index=False)     
+    df.to_csv("Data/fbdtw_labeled_traingen.csv",  index=False)     
     return cat_data
 
 
