@@ -163,9 +163,9 @@ with tf.Session(graph=graph) as sess:
     df.to_csv("Data/logdata.csv", index=False)  
       
     cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
-    #df = pd.DataFrame(cat_data)
-    #df.to_csv("Data/CNN_labeled.csv", index=False)
-    #df.to_csv("Data/logdata_transformed.csv", index=False)
+    df = pd.DataFrame(cat_data)
+    df.to_csv("Data/with_overlap.csv", index=False)
+
   
     # skip repetitions and choose the best curve of the particular classes 
     _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
@@ -193,7 +193,7 @@ with tf.Session(graph=graph) as sess:
     # save final categorized data in file  
     print (data)
     df = pd.DataFrame(data)
-    df.to_csv("Data/CNN_labeled.csv", index=False)
+    df.to_csv("Data/CNN_labeled_test.csv", index=False)
     
     for x_t, y_t in get_batches(X_test, y_test, batch_size):
         feed = {inputs_ : x_t, labels_ : y_t, keep_prob_ : 1}

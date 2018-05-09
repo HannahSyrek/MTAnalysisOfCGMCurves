@@ -96,6 +96,9 @@ def decode_classes(data):
     return data    
 
 cnn_data = decode_classes(cnndata) 
+cnn_data.resize((786,21))
+df = pd.DataFrame(cnn_data)
+df.to_csv("Data/richtigeLabel.csv", index=False) 
 
 
 '''
@@ -239,10 +242,10 @@ def global_Feature(ts):
 # Plot the results to visualize the found patterns
 #==============================================================================
 
-#print [plotCategories(1,cnn_data),plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
+print [plotCategories(6,cnn_data)]#,plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
 
-print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
-print len([plotCategories(6,skipRepetitions(x_data))])
+#print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
+#print len([plotCategories(6,skipRepetitions(x_data))])
 reload(sys)  
 sys.setdefaultencoding('utf8')
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')

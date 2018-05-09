@@ -16,8 +16,8 @@ cgmdata = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1,
                          usecols = (3))
 cgm_data = skipmissingdata(cgmdata)
-patterns = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/withoutReps.csv",
-                          delimiter = ",", dtype = None, skip_header = 1)
+patterns = decode_classes(np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
+                          delimiter = ",", dtype = None, skip_header = 1))
 temp_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1)
 raw_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
@@ -58,7 +58,7 @@ def export(data, pats):
 
 # Save raw data with new information: The classification of the particular time serie
 df = pd.DataFrame(export(cgm_data,patterns))
-df.to_csv("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Final_Classifications/VBDTW/classified_data.csv", index=False, header = False)
+df.to_csv("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Final_Classifications/CNN/testClassifications.csv", index=False, header = False)
 
 
 
