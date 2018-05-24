@@ -254,16 +254,16 @@ sys.setdefaultencoding('utf8')
 #print len([plotCategories(6,skipRepetitions(x_data))])
 
 # Plot progression of averaged samples of the three different classes to illustrate it in thesis
-#sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
-#                         delimiter = ",", dtype = None, skip_header = 1)
-#c_means=np.zeros((3,20))
-#for i in range(0,20):
-#    c_means[0][i] = np.mean(sampleset.T[i][0:200])
-#    c_means[1][i] = np.mean(sampleset.T[i][200:400])
-#    c_means[2][i] = np.mean(sampleset.T[i][500:600])
-#plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
-#plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
-#plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
+sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+                         delimiter = ",", dtype = None, skip_header = 1)
+c_means=np.zeros((3,20))
+for i in range(0,20):
+    c_means[0][i] = np.mean(sampleset.T[i][0:200])
+    c_means[1][i] = np.mean(sampleset.T[i][200:400])
+    c_means[2][i] = np.mean(sampleset.T[i][500:600])
+plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
+plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
+plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
 
 
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
