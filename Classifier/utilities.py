@@ -13,6 +13,7 @@ import sys
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 # Initilize some parameters
 ts_length = 20
@@ -96,9 +97,9 @@ def decode_classes(data):
     return data    
 
 cnn_data = decode_classes(cnndata) 
-cnn_data.resize((786,21))
-df = pd.DataFrame(cnn_data)
-df.to_csv("Data/richtigeLabel.csv", index=False) 
+#cnn_data.resize((786,21))
+#df = pd.DataFrame(cnn_data)
+#df.to_csv("Data/richtigeLabel.csv", index=False) 
 
 
 '''
@@ -222,32 +223,49 @@ def global_Feature(ts):
 # Print accuracy rate and particular confusion matrix of the current classification result
 #=========================================================================================
 
-#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
-#print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
+print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
 
 #print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
-#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5])   
+#print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
+#print classification_report(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
+  
 
 #print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
 #print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
+#print classification_report(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
+
 
 #print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
-#print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
-
-#print accuracy_score(labeled_set.T[20],cnn_data.T[20])  
-#print confusion_matrix(labeled_set.T[20],cnn_data.T[20], labels = [1,4,6,5])  
+#print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5])
+#print classification_report(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
 
 
 #==============================================================================
 # Plot the results to visualize the found patterns
 #==============================================================================
+reload(sys)  
+sys.setdefaultencoding('utf8')
+#print [plotCategories(6,cnn_data)]#,plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
 
-print [plotCategories(6,cnn_data)]#,plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
 
 #print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
 #print len([plotCategories(6,skipRepetitions(x_data))])
-reload(sys)  
-sys.setdefaultencoding('utf8')
+
+# Plot progression of averaged samples of the three different classes to illustrate it in thesis
+#sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+#                         delimiter = ",", dtype = None, skip_header = 1)
+#c_means=np.zeros((3,20))
+#for i in range(0,20):
+#    c_means[0][i] = np.mean(sampleset.T[i][0:200])
+#    c_means[1][i] = np.mean(sampleset.T[i][200:400])
+#    c_means[2][i] = np.mean(sampleset.T[i][500:600])
+#plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
+#plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
+#plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
+
+
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
 plt.axis([0, ts_length-1, 10, 500])

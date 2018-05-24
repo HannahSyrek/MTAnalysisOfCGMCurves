@@ -43,11 +43,11 @@ class Generator:
     '''  
 
     def builddataset():
-        dataset = np.zeros((600,21))
+        dataset = np.zeros((60,21))
         counter = 0
         for curve in categories:            
-            if(counter < 600):
-                for i in range(counter, counter +200):
+            if(counter < 60):
+                for i in range(counter, counter +20):
                     #generate the specific curve
                     c = curve.generate()
                     #smooth curve with savitzky_golay filter
@@ -55,7 +55,7 @@ class Generator:
                     chat = np.append(chat, curve.Categorie)
                     for j in range(0,21):
                         dataset[i][j] = chat[j]
-                counter = counter + 200    
+                counter = counter + 20    
         return dataset
                        
         
@@ -65,7 +65,7 @@ class Generator:
     def saveData(datamatrix):
         df = pd.DataFrame(datamatrix)
         #save dataframe in train- respectively testset
-        df.to_csv("train_generated.csv",  index=False)
+        df.to_csv("test.csv",  index=False)
         #df.to_csv("test_set.csv")
         
 
