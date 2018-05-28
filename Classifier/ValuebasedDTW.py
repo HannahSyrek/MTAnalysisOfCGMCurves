@@ -57,11 +57,11 @@ progression of the categories.
 def knnDynamic(train,test,w):
     predictions=[]
     dists = []
-    overlap_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
-    #save all time series with an overlap of 95 % in a new matrix 
-    for i in range(0,len(test)-(ts_length-1)):
-        overlap_timeserie[i][:] = test[i:ts_length+i]
-    test = overlap_timeserie   
+#    overlap_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
+#    #save all time series with an overlap of 95 % in a new matrix 
+#    for i in range(0,len(test)-(ts_length-1)):
+#        overlap_timeserie[i][:] = test[i:ts_length+i]
+#    test = overlap_timeserie   
     # categorize all time series 
     for ind,i in enumerate(test):        
         min_dist=float('inf')
@@ -69,10 +69,10 @@ def knnDynamic(train,test,w):
         print ind
         for j in train:
             # For the derivation of the datapoints, substitute the following two lines with:
-            #if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
-                #dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
-            if LB_Keogh(i[:],j[:-1],10)<min_dist:
-                dist=DTWDistanceFast(i[:],j[:-1],w)
+            if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
+                dist=DTWDistanceFast(derive(i[:]),derive(j[:-1]),w)
+            #if LB_Keogh(i[:],j[:-1],10)<min_dist:
+              #  dist=DTWDistanceFast(i[:],j[:-1],w)
                 if dist<min_dist:
                     min_dist=dist     
                     closest_seq=j
@@ -106,11 +106,11 @@ def knnDynamic(train,test,w):
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions          
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/VBDTW_labeled_raw.csv", index=False)     
+    df.to_csv("Data/DDTW_set7_anova.csv", index=False)     
     return cat_data
 
 
-print knnDynamic(trainset,raw_data, 50)
+print knnDynamic(trainset,labeled_set, 50)
 
 #==============================================================================
 #plot the results to visualize the found patterns

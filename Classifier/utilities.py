@@ -32,21 +32,21 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 # Read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
-labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/testset.csv", 
+labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/set_7.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)                         
 _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])
 
 
-ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDTW_labeled_trainset.csv", 
+ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDTW_set7_anova.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_test.csv", 
+vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_set7_anova.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_trainset.csv", 
+afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_set7_anova.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
-fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_traingen.csv", 
+fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_set7_anova.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 cnndata = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/CNN_labeled.csv",
                           delimiter = ",", dtype = None, skip_header = 1)                          
@@ -223,9 +223,9 @@ def global_Feature(ts):
 # Print accuracy rate and particular confusion matrix of the current classification result
 #=========================================================================================
 
-print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
-print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
-print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
+#print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+#print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
 
 #print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
 #print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
@@ -237,9 +237,9 @@ print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5])
 #print classification_report(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
 
 
-#print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
-#print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5])
-#print classification_report(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
+print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
+print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5])
+print classification_report(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
 
 
 #==============================================================================
@@ -254,16 +254,16 @@ sys.setdefaultencoding('utf8')
 #print len([plotCategories(6,skipRepetitions(x_data))])
 
 # Plot progression of averaged samples of the three different classes to illustrate it in thesis
-sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
-                         delimiter = ",", dtype = None, skip_header = 1)
-c_means=np.zeros((3,20))
-for i in range(0,20):
-    c_means[0][i] = np.mean(sampleset.T[i][0:200])
-    c_means[1][i] = np.mean(sampleset.T[i][200:400])
-    c_means[2][i] = np.mean(sampleset.T[i][500:600])
-plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
-plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
-plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
+#sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+#                         delimiter = ",", dtype = None, skip_header = 1)
+#c_means=np.zeros((3,20))
+#for i in range(0,20):
+#    c_means[0][i] = np.mean(sampleset.T[i][0:200])
+#    c_means[1][i] = np.mean(sampleset.T[i][200:400])
+#    c_means[2][i] = np.mean(sampleset.T[i][500:600])
+#plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
+#plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
+#plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
 
 
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')

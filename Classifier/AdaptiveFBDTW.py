@@ -88,8 +88,9 @@ progression of the categories.
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
-    weights = weighting_Algo(train)
+    weights = [0.5385535657413113, 0.4614464342586887]
     #[0.5385535657413113, 0.4614464342586887]
+    #weighting_Algo(train)
     print weights
     global w_i 
     w_i= weights[0]
@@ -141,7 +142,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/AFBDTW_labeled_trainset.csv",  index=False)     
+    df.to_csv("Data/AFBDTW_set7_anova.csv",  index=False)     
     return cat_data
     
 
