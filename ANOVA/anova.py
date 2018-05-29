@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 28 20:06:45 2018
-
-@author: hannah
+@author: hannah syrek
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.multicomp import MultiComparison
 
 datafile="/home/hannah/Dokumente/MTAnalysisOfCGMCurves/ANOVA/Anova_acc.csv"
 data = pd.read_csv(datafile)
@@ -27,10 +28,22 @@ N = len(data.values)  # conditions times participants
 n = data.groupby('classifier').size()[0] #Participants in each condition
 	
 
- 
+
 F, p = stats.f_oneway(d_data['VBDTW'], d_data['DDTW'], d_data['FBDTW'], d_data['AFBDTW'], d_data['CNN'])
 print F,p
+
+mc = MultiComparison(data['accuracy'], data['classifier'])
+result = mc.tukeyhsd()
+
+
+
+print(result)
+print(mc.groupsunique)
+
 plt.show()
+
+
+
 
 
 	
