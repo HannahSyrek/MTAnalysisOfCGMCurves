@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
+import timeit
 
 
 '''
@@ -67,6 +68,7 @@ def knnDynamic(train,test,w):
         min_dist=float('inf')
         closest_seq=[]
         print ind
+        #print timeit.Timer(ind)
         for j in train:
             # For the derivation of the datapoints, substitute the following two lines with:
             if LB_Keogh(derive(i[:]),derive(j[:-1]),10)<min_dist:
@@ -110,7 +112,8 @@ def knnDynamic(train,test,w):
     return cat_data
 
 
-print knnDynamic(trainset,labeled_set, 50)
+print 
+print timeit.Timer(knnDynamic(trainset,labeled_set, 50))
 
 #==============================================================================
 #plot the results to visualize the found patterns
