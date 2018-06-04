@@ -111,7 +111,7 @@ def knnDynamic(train,test,w):
     cat_data = np.concatenate((np.array(test), np.array(dist_data)), axis = 1)                                
     #attention: the data includes repetitions of the assigned curves-> use skipRepetitions          
     df = pd.DataFrame(cat_data)
-    df.to_csv("Data/DDTW_set7_anova.csv", index=False)     
+    df.to_csv("Data/DDTW_labeled.csv", index=False)     
     return cat_data
 
 

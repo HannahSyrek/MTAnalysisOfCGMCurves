@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 time_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/PredictionTime/predictiontime.csv", 
                          delimiter = ",", dtype = None, skip_header = 1, usecols = [1,2,3,4,5])
 
-print time_data[1]
+print time_data[3]
 #print time_data.T
 
 
