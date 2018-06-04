@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
+import time
 
 
 
@@ -88,7 +89,8 @@ progression of the categories.
 def knn_AdaptiveFeaturebased(train,test,w):
     predictions=[]
     dists = []
-    weights = [0.5385535657413113, 0.4614464342586887]
+    start = time.time()
+    weights = weighting_Algo(train)
     #[0.5385535657413113, 0.4614464342586887]
     #weighting_Algo(train)
     print weights
@@ -116,6 +118,7 @@ def knn_AdaptiveFeaturebased(train,test,w):
         predictions.append(closest_seq[-1])  
         dists.append(min_dist)  
         
+    print ("total time", time.time() -start)        
     threshold_vec = np.zeros(len(dists))
     dist_data = np.concatenate((np.array([predictions]).T, np.array([dists]).T, np.array([threshold_vec]).T), axis = 1)    
     _class = 1    

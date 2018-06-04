@@ -32,9 +32,9 @@ time_steps = np.asarray(range(0,ts_length))
 
 
 # Read the needed data from .csv files
-trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/trainset.csv", 
+trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/timePrediction/150_trainsamples.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)
-labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/set_7.csv", 
+labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)                         
 _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
                          delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])

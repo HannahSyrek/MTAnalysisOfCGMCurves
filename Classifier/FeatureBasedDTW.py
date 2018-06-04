@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 from utilities import *
-
+import time
 
 '''
 Implements a faster version of dynamic time wraping, includes w, a windows size. 
@@ -85,6 +85,7 @@ progression of the categories.
 def knn_Featurebased(train,test,w):
     predictions=[]
     dists = []
+    start = time.time()
 #    dyn_timeserie = np.zeros((len(test)-(ts_length-1),ts_length))
 #    #save all possible 9716 time series in a new matrix to iterate over all 
 #    for i in range(0,len(test)-(ts_length-1)):
@@ -104,7 +105,7 @@ def knn_Featurebased(train,test,w):
         #assign all time series to the class with the nearest distance
         predictions.append(closest_seq[-1])  
         dists.append(min_dist)  
-        
+    print ("total time", time.time() -start)
     threshold_vec = np.zeros(len(dists))
     dist_data = np.concatenate((np.array([predictions]).T, np.array([dists]).T, np.array([threshold_vec]).T), axis = 1)    
     _class = 1    
