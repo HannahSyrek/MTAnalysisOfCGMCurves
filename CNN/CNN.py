@@ -1,36 +1,44 @@
 # -*- coding: utf-8 -*-
 """
-@author: hannah syrek
+@author: Hannah Syrek
 This script implements a convolutional neural network to classify the data 
 of diabetes type 1 patients.
 """
+
 # Imports
 import numpy as np
 import os
 import pandas as pd
 from utilities import *
+import time
+import itertools
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import matplotlib.pyplot as plt 
 from sklearn.metrics import confusion_matrix
-#%matplotlib inline
+from sklearn.metrics import classification_report
+
+start = time.time()
 
 # Prepare data
 X_train, labels_train = read_data(data_path = "./Data/trainset.csv")
 X_test, labels_test = read_data(data_path = "./Data/testset.csv")
-_raw = np.genfromtxt("./Data/overlap_data.csv", delimiter = ",", skip_header = 1)
+
+# Read raw data and cast the input array in a numpy array with the shape: (n_timeseries, seq_len, n_channels)
+_raw = np.genfromtxt("./Data/raw_data.csv", delimiter = ",", skip_header = 1)
 data = np.zeros((len(_raw),20))  
 for i in range(0,len(_raw)):
     data[i][:] = _raw[i][:]
 X_raw = data.reshape((len(_raw), 20, 1))     
 
-
-# Normalize
+# Normalize data
 X_train, X_test = standardize(X_train, X_test)
 X_t, X_raw = standardize(X_train, X_raw)
 
-X_tr, X_vld, lab_tr, lab_vld = train_test_split(X_train, labels_train, stratify = labels_train, random_state = 123)
+# Initialize validation set
+X_tr, X_vld, lab_tr, lab_vld = train_test_split(X_train, labels_train, stratify = labels_train, random_state = 42)
 
+# Change label of classes to could use the one-hot encoding
 lab_tr = change_label(lab_tr)
 lab_vld = change_label(lab_vld)
 labels_train = change_label(labels_train)
@@ -44,7 +52,7 @@ y_test = one_hot(labels_test)
 # Hyperparameters
 batch_size = 50
 seq_len = 20
-learning_rate = 0.0001
+learning_rate = 0.00006
 epochs = 2000
 n_classes = 4
 n_channels = 20
@@ -120,18 +128,17 @@ with tf.Session(graph=graph) as sess:
                     loss_v, acc_v = sess.run([cost, accuracy], feed_dict = feed)
                     val_acc_.append(acc_v)
                     val_loss_.append(loss_v)
-                    
                 # Print info
                 print("Epoch: {}/{}".format(e,epochs),"Iteration: {:d}".format(iteration), "Validation loss: {:6f}".format(np.mean(val_loss_)), "Validation acc: {:.6f}".format(np.mean(val_acc_)))
-                
-                #Store
+                # Store
                 validation_acc.append(np.mean(val_acc_))
                 validation_loss.append(np.mean(val_loss_))
             # Iterate
             iteration += 1
-    saver.save(sess, "checkpoints-cnn/dat85.ckpt")
-#    
-# Plot training and test loss
+    saver.save(sess, "checkpoints-cnn/diabetes12.ckpt")
+
+    
+# Plot training and validation loss
 t = np.arange(iteration-1)
 plt.figure(figsize = (6,6))
 plt.plot(t, np.array(train_loss), 'r-', t[t % 10 ==0], np.array(validation_loss), 'b*')
@@ -140,7 +147,7 @@ plt.ylabel("Loss")
 plt.legend(['train','validation'], loc='upper right')
 plt.show()
 
-# PLot Accuracy 
+# Plot Accuracy  
 plt.figure(figsize = (6,6))  
 plt.plot(t, np.array(train_acc), 'r-', t[t % 10 ==0], validation_acc, 'b*')
 plt.xlabel("iteration")
@@ -148,26 +155,42 @@ plt.ylabel("Accuracy")
 plt.legend(['train','validation'], loc='upper right')
 plt.show()
 
-# Evaluate on test set
-test_acc = []
+"""
+This function prints and plots the confusion matrix of the applied classifier.
+"""
+def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
+    print(cm)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    fmt = 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
+
+test_acc = []
 with tf.Session(graph=graph) as sess:
     saver.restore(sess, tf.train.latest_checkpoint('checkpoints-cnn'))
-    feed = {inputs_ : X_raw, keep_prob_ : 1}
-    
+    feed = {inputs_ : X_raw, keep_prob_ : 1} 
     logs = sess.run(logs, feed_dict=feed)
     preds = sess.run(predictions, feed_dict=feed)
-    
+    # Save logits to find the particular curve with highest activation
     log_data = np.concatenate((np.array(logs), np.array([preds]).T), axis = 1)
     df = pd.DataFrame(log_data)
     df.to_csv("Data/logdata.csv", index=False)  
-      
     cat_data = np.concatenate((np.array(_raw), np.array([preds]).T), axis = 1) 
-    df = pd.DataFrame(cat_data)
-    df.to_csv("Data/with_overlap.csv", index=False)
-
   
-    # skip repetitions and choose the best curve of the particular classes 
+    # Skip repetitions and choose the curve with the highest activation of the 
+    # particular classes 
     _logfile = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
     data = np.zeros((len(cat_data),21))
     data[0][:] = cat_data[0][:]
@@ -190,29 +213,31 @@ with tf.Session(graph=graph) as sess:
                     ind += 1
             else:
                 ind += 1
-    # save final categorized data in file  
-    print (data)
+    # Save final categorized data in file  
     df = pd.DataFrame(data)
-    df.to_csv("Data/CNN_labeled_test.csv", index=False)
+    df.to_csv("Data/CNN_labeled.csv", index=False)
     
+    # Evaluate on test set, print test accuracy and confusion matrix   
     for x_t, y_t in get_batches(X_test, y_test, batch_size):
         feed = {inputs_ : x_t, labels_ : y_t, keep_prob_ : 1}
         batch_acc = sess.run(accuracy, feed_dict=feed)
         preds = sess.run(predictions, feed_dict=feed) 
         test_acc.append(batch_acc)
+
     print("Test accuracy: {:.6f}".format(np.mean(test_acc))) 
     feed = {inputs_ : X_test, keep_prob_ : 1}
     preds = sess.run(predictions, feed_dict=feed) 
-    print("Confusion matrix: \n", confusion_matrix(np.array([labels_test]).T, np.array([change_class_label(preds)]).T), 4)
-    print (len(X_train))
-    print (len(X_test))
- 
+    #print("Confusion matrix: \n", confusion_matrix(np.array([labels_test]).T, np.array([change_class_label(preds)]).T))
+    print("Classification report: \n", classification_report(np.array([labels_test]).T, np.array([change_class_label(preds)]).T))
+    cnn_cnf_matrix= confusion_matrix(np.array([labels_test]).T, np.array([change_class_label(preds)]).T)
+    np.set_printoptions(precision=2)
+    plt.figure()
+    plot_confusion_matrix(cnn_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the AFBDTW')
+    plt.show()
+print("total prediction time: ", time.time()-start)
+
     
-    
-    
-############################_Threshold implementation_###################################   
-     
-    
+############################_Threshold implementation_############################       
 #    # Implement thresholds to assign samples to the residue class
 #    _logs = np.genfromtxt("./Data/logdata.csv", delimiter = ",", skip_header = 1)
 #    new_preds = []

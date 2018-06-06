@@ -2,16 +2,19 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar  9 11:13:38 2018
-@author: hannah syrek
+@author: Hannah Syrek
 Script that implements the needed parameters and utilities to classify data 
 with a convolutional neural network.
 """
+
 # Imports
 import pandas as pd 
 import numpy as np
 import os
 
 '''
+Method to read data and cast them into the needed shape: 
+(n_timeseries, seq_len, n_channels)
 '''
 def read_data(data_path):    
     # Fixed parameters
@@ -35,14 +38,20 @@ def read_data(data_path):
     return X, labels
 
 '''
+Method to standardize the datasets.
 '''
 def standardize(train,test):
     X_train=(train-np.mean(train,axis=0)[None,:,0])/np.std(train,axis=0)[None,:,0]
     X_test=(test-np.mean(test,axis=0)[None,:,0])/np.std(test,axis=0)[None,:,0]
-    
+    # Returns
     return X_train, X_test
 
 '''
+Method to change label.
+1 -> 1
+4 -> 2
+6 -> 3
+5 -> 4
 '''
 def change_label(lab):
     new_lab = lab.astype(int)
@@ -55,7 +64,13 @@ def change_label(lab):
             new_lab[i]=4
     return new_lab
 
-
+'''
+Rechange class label after training, cause of the one-hot encoding.
+0 -> 1
+1 -> 2
+2 -> 3
+3 -> 4
+'''
 def change_class_label(lab):
     new_lab = lab.astype(int)
     for i in range(0,len(new_lab)):
@@ -68,17 +83,18 @@ def change_class_label(lab):
         elif(new_lab[i]==3):
             new_lab[i]=4
     return new_lab
+
 '''
+Method to encode data label information in one-hot matrices.
 '''
 def one_hot(labels, n_class=4):
     expansion = np.eye(n_class)
-    #print (expansion)
     y = expansion[:,labels-1].T
-    #print (y)
     assert y.shape[1] == n_class, "Wrong number of labels!"   
     return y
 
 '''
+Method to split n_timeseries in m batches.
 '''
 def get_batches(X,y,batch_size = 50):
     n_batches = len(X)//batch_size

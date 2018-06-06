@@ -10,6 +10,7 @@ algorithms.
 import numpy as np
 import pandas as pd
 import sys
+import itertools
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
@@ -42,8 +43,8 @@ _data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
 
 ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDTW_labeled.csv", 
                         delimiter = ",", dtype = None, skip_header = 1) 
-#vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_set7_anova.csv", 
-                       # delimiter = ",", dtype = None, skip_header = 1) 
+vbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/VBDTW_labeled_test.csv", 
+                        delimiter = ",", dtype = None, skip_header = 1) 
 afbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/AFBDTW_labeled_trainset.csv", 
                         delimiter = ",", dtype = None, skip_header = 1)
 fbdtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/fbdtw_labeled_trainset.csv", 
@@ -218,65 +219,70 @@ def global_Feature(ts):
     return new_timeserie
 
 
-
-#=========================================================================================
-# Print accuracy rate and particular confusion matrix of the current classification result
-#=========================================================================================
-
-#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
-#print confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
-#print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
-
-print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
-print confusion_matrix(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
-print classification_report(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
-  
-
-#print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
-#print confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
-#print classification_report(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
-
-
-#print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
-#print confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5])
-#print classification_report(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
-
+"""
+This function prints and plots the confusion matrix of the applied classifier.
+"""
+def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
+    print(cm)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    fmt = 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 #==============================================================================
-# Plot the results to visualize the found patterns
+# Print accuracy rate and particular classificaton report
+#==============================================================================
+
+#print accuracy_score(vbdtw_set.T[20],vbdtw_set.T[21])  
+#print classification_report(vbdtw_set.T[20],vbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(ddtw_set.T[20],ddtw_set.T[21]) 
+#print classification_report(ddtw_set.T[20],ddtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(fbdtw_set.T[20],fbdtw_set.T[21])  
+#print classification_report(fbdtw_set.T[20],fbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#print accuracy_score(afbdtw_set.T[20],afbdtw_set.T[21])  
+#print classification_report(afbdtw_set.T[20],afbdtw_set.T[21], labels = [1,4,6,5]) 
+
+#==============================================================================
+# Plot the results 
 #==============================================================================
 reload(sys)  
 sys.setdefaultencoding('utf8')
-#print [plotCategories(6,cnn_data)]#,plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
-
-
-#print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
-#print len([plotCategories(6,skipRepetitions(x_data))])
-
-# Plot progression of averaged samples of the three different classes to illustrate it in thesis
-#sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
-#                         delimiter = ",", dtype = None, skip_header = 1)
-#c_means=np.zeros((3,20))
-#for i in range(0,20):
-#    c_means[0][i] = np.mean(sampleset.T[i][0:200])
-#    c_means[1][i] = np.mean(sampleset.T[i][200:400])
-#    c_means[2][i] = np.mean(sampleset.T[i][500:600])
-#plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
-#plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
-#plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
-
-
+# Plot found patterns 
+#print plotCategories(6,cnn_data)
 plt.plot(time_steps, upper_bound,'r--', time_steps, lower_bound, 'r--')
 plt.legend(loc=1)
 plt.axis([0, ts_length-1, 10, 500])
 plt.ylabel('blood glucose content (mg/dL)')
 plt.xlabel('timesteps')
+
+# Compute confusion matrix
+vbdtw_cnf_matrix= confusion_matrix(vbdtw_set.T[20],vbdtw_set.T[21],labels = [1,4,6,5]) 
+ddtw_cnf_matrix= confusion_matrix(ddtw_set.T[20],ddtw_set.T[21],labels = [1,4,6,5])
+fbdtw_cnf_matrix= confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21],labels = [1,4,6,5]) 
+afbdtw_cnf_matrix= confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21],labels = [1,4,6,5]) 
+np.set_printoptions(precision=2)
+
+
+# Plot confusion matrix
+plt.figure()
+plot_confusion_matrix(vbdtw_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the AFBDTW')
+
+
 plt.show()
-
-
-
-
-
 
 
 
@@ -361,3 +367,20 @@ plt.show()
 #             max_dist = max_Distance(class6, time_seq)
 #
 #            maxDistclass1 =   
+#print [plotCategories(6,cnn_data)]#,plotCategories(4,cnn_data),plotCategories(6,cnn_data),plotCategories(5,cnn_data)]
+
+
+#print [plotCategories(6,skipRepetitions(x_data))]#,plotCategories(4,skipRepetitions(x_data)),plotCategories(6,skipRepetitions(x_data)),plotCategories(5,skipRepetitions(x_data))]
+#print len([plotCategories(6,skipRepetitions(x_data))])
+
+# Plot progression of averaged samples of the three different classes to illustrate it in thesis
+#sampleset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/train_generated.csv", 
+#                         delimiter = ",", dtype = None, skip_header = 1)
+#c_means=np.zeros((3,20))
+#for i in range(0,20):
+#    c_means[0][i] = np.mean(sampleset.T[i][0:200])
+#    c_means[1][i] = np.mean(sampleset.T[i][200:400])
+#    c_means[2][i] = np.mean(sampleset.T[i][500:600])
+#plt.plot(time_steps,c_means[0], label = "Class 1: Normal Progression")
+#plt.plot(time_steps,c_means[1], label = "Class 2: Bolus too small")
+#plt.plot(time_steps,c_means[2], label = "Class 3: Bolus Correction")
