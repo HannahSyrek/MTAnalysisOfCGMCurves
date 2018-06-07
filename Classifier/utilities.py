@@ -37,8 +37,8 @@ trainset = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator
                          delimiter = ",", dtype = None, skip_header = 1)
 labeled_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Generator/testset.csv", 
                          delimiter = ",", dtype = None, skip_header = 1)                         
-_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
-                         delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])
+#_data = np.genfromtxt("/home/hannah/Dokumente/TSAd1/Datasets/export-v2.csv",
+                  #       delimiter = ",", dtype = None, skip_header = 1, filling_values = -1, usecols = [3])
 
 
 ddtw_set = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/Classifier/Data/DDTW_labeled.csv", 
@@ -116,7 +116,7 @@ def skipmissingdata(data):
             new_data.append(i)            
     return new_data
  
-raw_data = skipmissingdata(_data) 
+#raw_data = skipmissingdata(_data) 
 
 '''
 Method to skip the repetitions in the dynamic categorized data.
@@ -222,7 +222,13 @@ def global_Feature(ts):
 """
 This function prints and plots the confusion matrix of the applied classifier.
 """
-def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
+def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues, normalize=False,):
+    if normalize:
+        cm_temp = cm
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")  
+    else:
+        print('Confusion matrix, without normalization')
     print(cm)
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -233,7 +239,7 @@ def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blu
     fmt = 'd'
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
+        plt.text(j, i, format(cm_temp[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
     plt.tight_layout()
@@ -276,20 +282,20 @@ fbdtw_cnf_matrix= confusion_matrix(fbdtw_set.T[20],fbdtw_set.T[21],labels = [1,4
 afbdtw_cnf_matrix= confusion_matrix(afbdtw_set.T[20],afbdtw_set.T[21],labels = [1,4,6,5]) 
 np.set_printoptions(precision=2)
 
-
 # Plot confusion matrix
 plt.figure()
-plot_confusion_matrix(vbdtw_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the AFBDTW')
-
-
+plot_confusion_matrix(fbdtw_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the FBDTW',normalize=True)
 plt.show()
 
 
 
 
-#   
-#'''
-#'''
+
+
+
+
+
+
 #def save_overlap_data(data):
 #    dyn_timeserie = np.zeros((607,ts_length))
 #    #save all possible time series in a new matrix to iterate over all 

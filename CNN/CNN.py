@@ -158,7 +158,13 @@ plt.show()
 """
 This function prints and plots the confusion matrix of the applied classifier.
 """
-def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
+def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues, normalize=False):
+    if normalize:
+        cm_temp = cm
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")  
+    else:
+        print('Confusion matrix, without normalization')
     print(cm)
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -169,7 +175,7 @@ def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blu
     fmt = 'd'
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
+        plt.text(j, i, format(cm_temp[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
     plt.tight_layout()
@@ -232,7 +238,7 @@ with tf.Session(graph=graph) as sess:
     cnn_cnf_matrix= confusion_matrix(np.array([labels_test]).T, np.array([change_class_label(preds)]).T)
     np.set_printoptions(precision=2)
     plt.figure()
-    plot_confusion_matrix(cnn_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the AFBDTW')
+    plot_confusion_matrix(cnn_cnf_matrix, classes=['1','2','3','4'], title='Confusion matrix of the CNN',normalize=True)
     plt.show()
 print("total prediction time: ", time.time()-start)
 
