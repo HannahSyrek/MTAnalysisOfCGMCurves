@@ -27,7 +27,7 @@ elements, but arises from a spatial structure. The application of CNNs to observ
 patterns in physiological time series is a promising solution that requires further research.
 
 
-This project implements a CNN and four different classifiers that accroding to the commonly used 
+This project implements a CNN and four different classifiers accroding to the commonly used 
 dynamic time warping algorithm. The main goal is to classify real-world data of diabetes type I 
 patients recognizing certain patterns in the given data sets. Needed mathematical and further 
 background information of the implemted classifiers are released in the submitted master thesis.
