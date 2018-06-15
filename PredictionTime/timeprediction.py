@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun  4 09:14:23 2018
-@author: hannah syrek
+@author: Hannah syrek
 """
 # Imports
 import numpy as np
@@ -13,12 +13,8 @@ import matplotlib.pyplot as plt
 time_data = np.genfromtxt("/home/hannah/Dokumente/MTAnalysisOfCGMCurves/PredictionTime/predictiontime.csv", 
                          delimiter = ",", dtype = None, skip_header = 1, usecols = [1,2,3,4,5])
 
-print time_data[3]
-#print time_data.T
-
 
 time_vector = [50,100,150,200,250]
-
 print time_vector
                          
 # Plot data

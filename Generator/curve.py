@@ -2,10 +2,12 @@
 """
 Created on Tue Feb 13 12:35:00 2018
 
-@author: hannah syrek
+@author: Hannah syrek
 This script set the characteristics of the curve instances and
 implements the generation of curves.
 """
+
+#Needed Imports
 import numpy as np
 
 

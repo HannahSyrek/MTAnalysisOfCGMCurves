@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 28 20:06:45 2018
-@author: hannah syrek
+@author: Hannah syrek
 """
 
+# Imports
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -11,15 +12,14 @@ from scipy import stats
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 from statsmodels.stats.multicomp import MultiComparison
 
+# Read data
 datafile="/home/hannah/Dokumente/MTAnalysisOfCGMCurves/ANOVA/Anova_acc.csv"
 data = pd.read_csv(datafile)
 
  
 #Create a boxplot
 data.boxplot('accuracy', by='classifier', figsize=(12, 8))
- 
 vb = data['accuracy'][data.classifier == 'VBDTW']
- 
 grps = pd.unique(data.classifier.values)
 d_data = {grp:data['accuracy'][data.classifier == grp] for grp in grps}
  
@@ -34,9 +34,6 @@ print F,p
 
 mc = MultiComparison(data['accuracy'], data['classifier'])
 result = mc.tukeyhsd()
-
-
-
 print(result)
 print(mc.groupsunique)
 
